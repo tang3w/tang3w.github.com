@@ -39,7 +39,7 @@ body {
 	background-attachment:fixed;
 	background: #f3f3f4;
 	background-position:center center;
-	font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-family:"Microsoft JhengHei","Microsoft YaHei","微软雅黑","Helvetica Neue",Helvetica,Verdana,Arial,sans-serif;
 }
 h2, h3, h4, h5, h6 {
 	color:#333333;
@@ -338,7 +338,7 @@ span.balloon {
 }
 
 #content #sidebar li a {
-	font-weight:bold;
+	font-weight:normal;
 	color:#444;
 	padding:3px;
 }
@@ -436,4 +436,8 @@ div#disqus_thread li ul li {
 	background: #ecf0f1;
 	margin: 40px -20px 20px;
 	padding: 10px 20px;
+}
+
+h2.title {
+    text-align: center;
 }
