@@ -434,10 +434,20 @@ div#disqus_thread li ul li {
 
 #content #state {
 	background: #ecf0f1;
-	margin: 40px -20px 20px;
+	margin: 0px -20px 20px;
 	padding: 10px 20px;
 }
 
 h2.title {
     text-align: center;
+}
+
+#content em {
+    font-weight: bold;
+}
+
+#content strong {
+    font-weight: bold;
+    font-style: italic;
+    border-bottom: 2px dotted #e74c3c;
 }
