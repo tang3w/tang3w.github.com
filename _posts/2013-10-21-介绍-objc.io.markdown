@@ -4,6 +4,7 @@ title: "介绍 objc.io"
 published: true
 categories:
 - translate
+- objc.io
 ---
 
 <p id="state">注：本文经过 objc.io 授权翻译，原文链接是：<a href="http://www.objc.io/issue-1/introduction.html" title="Introduction">Introduction</a></p>
