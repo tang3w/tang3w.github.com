@@ -245,19 +245,16 @@ hr {
 	margin: 0 -20px;
 }
 code, pre {
-	font-family:"Monaco","Courier New",monospace;
+	font-family:Menlo,monospace,"Courier New";
 	font-size:14px;
 	line-height:150%;
 }
 pre {
-	-moz-box-shadow:0 -1px 0 #444444;
-	background-color:#2c3234;
-	color:#FFFFFF;
 	margin:20px -20px;
-	padding:20px;
-	text-shadow:0 1px 0 #0f0f0f;
+	padding:0 15px;
 	white-space:pre-wrap;
 	word-wrap:break-word;
+    border-left: 5px solid #ecf0f1;
 }
 div.notice {
 	-moz-border-radius:5px 5px 5px 5px;
@@ -454,4 +451,8 @@ h2.title {
 
 #content li ul {
     margin: 0;
+}
+
+#content p.date {
+    text-align: right;
 }
