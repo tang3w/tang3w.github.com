@@ -106,7 +106,7 @@ div#content li {
 }
 
 div#content .cnt li {
-	margin:5px 5px 5px 15px;
+	margin:5px;
 }
 div#header {
 	font-size:13px;
@@ -241,7 +241,7 @@ ul.columns {
 hr {
 	clear:both;
 	border:0;
-	border-top:1px solid #999;
+	border-top:1px dashed #bdc3c7;
 	margin: 0 -20px;
 }
 code, pre {
@@ -446,4 +446,8 @@ h2.title {
 #content strong {
     font-weight: bold;
     border-bottom: 2px dotted #95a5a6;
+}
+
+#content ul {
+    margin: 20px 0;
 }
