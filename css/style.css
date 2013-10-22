@@ -451,3 +451,7 @@ h2.title {
 #content ul {
     margin: 20px 0;
 }
+
+#content li ul {
+    margin: 0;
+}
