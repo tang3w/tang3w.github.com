@@ -89,13 +89,74 @@ self.tableView.dataSource = photosArrayDataSource;
 
 这样的好处在于，你可以单独[测试这个类][2]，再也不用写第二遍。该原则同样适用于数组之外的其他对象。
 
-在今年我们做的一个应用里面，我们大量使用了 Core Data。我们创建了相似的类，但和之前使用的数组不一样，它用一个 fetched results controller 来获得数据。它实现了所有动画更新、处理 section headers、删除操作等逻辑。你可以创建这个类的实例，然后赋予一个 fetch request 和用来设置 cell 的 block，剩下的它都会处理，不用你操心了。
+在今年我们做的一个应用里面，我们大量使用了 Core Data。我们创建了相似的类，但和之前使用的数组不一样，它用一个 fetched results controller 来获取数据。它实现了所有动画更新、处理 section headers、删除操作等逻辑。你可以创建这个类的实例，然后赋予一个 fetch request 和用来设置 cell 的 block，剩下的它都会处理，不用你操心了。
 
 此外，这种方法也可以扩展到其他 protocols 上面。最明显的一个就是 `UICollectionViewDataSource`。这给了你极大的灵活性；如果，在开发的某个时候，你想用 `UICollectionView` 代替 `UITableView`，你几乎不需要对 view controller 作任何修改。你甚至可以让你的 data source 同时支持这两个协议。
 
 ### 将业务逻辑移到 Model 中
 
-下面是 view controller（来自其他项目）中的示例代码，
+下面是 view controller（来自其他项目）中的示例代码，用来查找一个用户的目前的优先事项列表：
+
+{% highlight objective-c %}
+
+- (void)loadPriorities {
+    NSDate* now = [NSDate date];
+    NSString* formatString = @"startDate <= %@ AND endDate >= %@";
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:formatString, now, now];
+    NSSet* priorities = [self.user.priorities filteredSetUsingPredicate:predicate];
+    self.priorities = [priorities allObjects];
+}
+
+{% endhighlight %}
+
+但是，把这些代码移动到 `User` 类的 category 中将会更加清晰。这样，在 `View Controller.m` 中看起来是这样：
+
+{% highlight objective-c %}
+
+- (void)loadPriorities {
+    self.priorities = [user currentPriorities];
+}
+
+{% endhighlight %}
+
+在 `User+Extensions.m` 中：
+
+{% highlight objective-c %}
+
+- (NSArray*)currentPriorities {
+    NSDate* now = [NSDate date];
+    NSString* formatString = @"startDate <= %@ AND endDate >= %@";
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:formatString, now, now];
+    return [[self.priorities filteredSetUsingPredicate:predicate] allObjects];
+}
+
+{% endhighlight %}
+
+有些代码不能被轻松地移动到 model 对象中，但明显和 model 代码紧密联系，对于这种情况，我们可以使用一个 `Store`：
+
+### 创建 Store 类
+
+在我们示例应用程序的第一个版本中，有些代码去加载文件并解析它。下面就是 view controller 中得代码：
+
+{% highlight objective-c %}
+
+- (void)readArchive {
+    NSBundle* bundle = [NSBundle bundleForClass:[self class]];
+    NSURL *archiveURL = [bundle URLForResource:@"photodata"
+                                 withExtension:@"bin"];
+    NSAssert(archiveURL != nil, @"Unable to find archive in bundle.");
+    NSData *data = [NSData dataWithContentsOfURL:archiveURL
+                                         options:0
+                                           error:NULL];
+    NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
+    _users = [unarchiver decodeObjectOfClass:[NSArray class] forKey:@"users"];
+    _photos = [unarchiver decodeObjectOfClass:[NSArray class] forKey:@"photos"];
+    [unarchiver finishDecoding];
+}
+
+{% endhighlight %}
+
+
 
 <p class="date"><a href="http://twitter.com/chriseidhof">Chris Eidhof</a>, 2013 年 6 月</p>
 

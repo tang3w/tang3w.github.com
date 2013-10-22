@@ -249,13 +249,7 @@ code, pre {
 	font-size:14px;
 	line-height:150%;
 }
-pre {
-	margin:20px -20px;
-	padding:0 15px;
-	white-space:pre-wrap;
-	word-wrap:break-word;
-    border-left: 5px solid #ecf0f1;
-}
+
 div.notice {
 	-moz-border-radius:5px 5px 5px 5px;
 	-webkit-border-radius:5px;
@@ -455,4 +449,11 @@ h2.title {
 
 #content p.date {
     text-align: right;
+}
+
+#content .highlight pre {
+    margin:20px -20px;
+    padding: 20px;
+    overflow: auto;
+    background: #eeeeee;
 }
