@@ -3,7 +3,7 @@ layout: post
 title: "更轻量的 View Controllers"
 published: true
 categories:
-- true
+- translate
 - objc.io
 ---
 
@@ -182,7 +182,7 @@ self.tableView.dataSource = photosArrayDataSource;
 
 ### 总结
 
-我们已经看到用来创建更小巧的 view controllers 的技术。我们并不是想把这些技术应用到每一个角落，只是我们有一个目标：写可维护的代码。知道这些模式后，我们就更有可能把那些笨重的 view controllers 变得更清晰。
+我们已经看到用来创建更小巧的 view controllers 的技术。我们并不是想把这些技术应用到每一个角落，只是我们有一个目标：写可维护的代码。知道这些模式后，我们就更有可能把那些笨重的 view controllers 变得更整洁。
 
 ### 扩展阅读
 
