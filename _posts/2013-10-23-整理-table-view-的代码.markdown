@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "整理 Table View 的代码"
-published: false
+published: true
 categories:
 - translate
 - objc.io
@@ -81,11 +81,76 @@ Table view controllers 的 view 属性永远都是一个 table view。如果你�
 
 ### 分离关注点（Separating Concerns）
 
-当处理 table views 的时候，有许多各种各样的任务，这些任务游走在 models，controllers 和 views 之间。为了避免让 view controllers 做所有的事，我们将尽可能地把这些任务划分到合适的地方，这样有利于阅读、维护和测试。
+当处理 table views 的时候，有许多各种各样的任务，这些任务穿梭于 models，controllers 和 views 之间。为了避免让 view controllers 做所有的事，我们将尽可能地把这些任务划分到合适的地方，这样有利于阅读、维护和测试。
 
-这里描述的技术是文章[更轻量的 View Controllers][3] 中的概念的延伸，请参考这篇文章来理解如何重构 data source 和 model 的逻辑。在 table views 的基础上，我们来具体看看如何在 view controllers 和 views 之间分离关注点。
+这里描述的技术是文章[更轻量的 View Controllers][3] 中的概念的延伸，请参考这篇文章来理解如何重构 data source 和 model 的逻辑。结合 table views，我们来具体看看如何在 view controllers 和 views 之间分离关注点。
 
-### Bridging the Gap Between Model Objects and Cells
+#### 搭建 Model 对象和 Cells 之间的桥梁
+
+有时我们需要处理在 view layer 中显示的数据。由于我们同时也希望让 model 和 view 之间明确分离，所以通常把这个任务转移到 table view 的 data source 中去做。
+
+{% highlight objective-c %}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView
+         cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    PhotoCell *cell = [tableView dequeueReusableCellWithIdentifier:@"PhotoCell"];
+    Photo *photo = [self itemAtIndexPath:indexPath];
+    cell.photoTitleLabel.text = photo.name;
+    NSString* date = [self.dateFormatter stringFromDate:photo.creationDate];
+    cell.photoDateLabel.text = date;
+}
+
+{% endhighlight %}
+
+但是这样的代码会让 data source 变得混乱，因为它向 data source 暴露了 cell 的设计。最好分解出来，放到 cell 类的一个 category 中。
+
+{% highlight objective-c %}
+
+@implementation PhotoCell (ConfigureForPhoto)
+
+- (void)configureForPhoto:(Photo *)photo
+{
+    self.photoTitleLabel.text = photo.name;
+    NSString* date = [self.dateFormatter stringFromDate:photo.creationDate];
+    self.photoDateLabel.text = date;
+}
+
+@end
+
+{% endhighlight %}
+
+有了上述代码后，我们的 data source 方法就变得简单了。
+
+{% highlight objective-c %}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView
+         cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    PhotoCell *cell = [tableView dequeueReusableCellWithIdentifier:PhotoCellIdentifier];
+    [cell configureForPhoto:[self itemAtIndexPath:indexPath]];
+    return cell;
+}
+
+{% endhighlight %}
+
+在我们的示例代码中，table view 的 data source 已经[分解到单独的类中了][4]，它用一个设置 cell 的 block 来初始化。这时，这个 block 就变得这样简单了：
+
+{% highlight objective-c %}
+
+TableViewCellConfigureBlock block = ^(PhotoCell *cell, Photo *photo) {
+    [cell configureForPhoto:photo];
+};
+
+{% endhighlight %}
+
+#### 让 Cells 可复用
+
+有时多种 model 对象需要用同一类型的 cell 来表示，这种情况下，我们可以进一步让 cell 可以复用。首先，我们给 cell 定义一个 protocol，需要用这个 cell 显示的对象必须遵循这个 protocol。然后简单修改 category 中的设置方法，让它可以接受遵循这个 protocol 的任何对象。这些简单的步骤让 cell 和任何特殊的 model 对象之间得以解耦，让它可适应不同的数据类型。
+
+#### 在 Cell 中控制 Cell 的状态
+
+
 
 <p class="date"><a href="http://twitter.com/floriankugler">Florian Kugler</a>, 2013 年 6 月</p>
 
@@ -93,3 +158,4 @@ Table view controllers 的 view 属性永远都是一个 table view。如果你�
 [1]: http://stackoverflow.com/questions/12805003/uirefreshcontrol-issues
 [2]: http://www.objc.io/issue-1/containment-view-controller.html
 [3]: http://tang3w.com/translate/objc.io/2013/10/22/%E6%9B%B4%E8%BD%BB%E9%87%8F%E7%9A%84-view-controllers.html
+[4]: http://tang3w.com/translate/objc.io/2013/10/22/%E6%9B%B4%E8%BD%BB%E9%87%8F%E7%9A%84-view-controllers.html#controllers

@@ -45,6 +45,8 @@ View controllers 通常是 iOS 项目中最大的文件，因为它们包含了�
 
 许多代码都围绕数组做一些事情，有些是专门针对 view controller 所管理的 photos 数组的。所以我们可以尝试把数组相关的代码移到单独的类中。我们使用一个 block 来设置 cell，也可以用 delegate 来做这件事，这取决于你的习惯。
 
+<div id="controllers">
+
 {% highlight objective-c %}
 
 @implementation ArrayDataSource
@@ -70,6 +72,8 @@ View controllers 通常是 iOS 项目中最大的文件，因为它们包含了�
 @end
 
 {% endhighlight %}
+
+</div>
 
 现在，你可以把 view controller 中的这 3 个方法去掉了，取而代之，你可以创建一个 `ArrayDataSource` 类的实例作为 table view 的 data source。
 
