@@ -1,17 +1,17 @@
 ---
 layout: post
 title: "更轻量的 View Controllers"
-published: false
+published: true
 categories:
-- translate
+- true
 - objc.io
 ---
 
 <p id="state">注：这篇翻译已经过 objc.io 授权，原文链接是：<a href="http://www.objc.io/issue-1/lighter-view-controllers.html" title="Lighter View Controllers">Lighter View Controllers</a></p>
 
-View controllers 通常是 iOS 项目中最大的文件，因为它们包含了许多不必要的代码。所以 View controllers 几乎总是复用率最低的那部分代码。我们将会看到给 view controllers 瘦身的技术，让代码可以复用，以及把代码移动到更合适的地方。
+View controllers 通常是 iOS 项目中最大的文件，因为它们包含了许多不必要的代码。所以 View controllers 中的代码几乎总是复用率最低的。我们将会看到给 view controllers 瘦身的技术，让代码变得可以复用，以及把代码移动到更合适的地方。
 
-你可以在Github上获取关于这个问题的[示例项目][1]。
+你可以在 Github 上获取关于这个问题的[示例项目][1]。
 
 ### 把 Data Source 和其他 Protocols 分离出来
 
@@ -43,7 +43,7 @@ View controllers 通常是 iOS 项目中最大的文件，因为它们包含了�
 
 {% endhighlight %}
 
-许多代码都围绕数组做一些事情，有些是专门针对 view controller 所管理的 photos 的。所以我们可以尝试把数组相关的代码移到单独的类中。我们使用一个 block 来设置 cell，也可以用 delegate 来做这件事，取决于你的习惯。
+许多代码都围绕数组做一些事情，有些是专门针对 view controller 所管理的 photos 数组的。所以我们可以尝试把数组相关的代码移到单独的类中。我们使用一个 block 来设置 cell，也可以用 delegate 来做这件事，这取决于你的习惯。
 
 {% highlight objective-c %}
 
@@ -95,7 +95,7 @@ self.tableView.dataSource = photosArrayDataSource;
 
 ### 将业务逻辑移到 Model 中
 
-下面是 view controller（来自其他项目）中的示例代码，用来查找一个用户的目前的优先事项列表：
+下面是 view controller（来自其他项目）中的示例代码，用来查找一个用户的目前的优先事项的列表：
 
 {% highlight objective-c %}
 
@@ -164,7 +164,7 @@ self.tableView.dataSource = photosArrayDataSource;
 
 ### 把 View 代码移到 View 层
 
-不应该在 view controller 中构建复杂的 view 层次结构。你可以使用 interface builder 或者把 views 封装到一个 `UIView` 子类当中。举个例，如果你要创建一个 date picker 控件，把它放到一个名为 `DatePickerView` 的类中会比把所有的事情都在 view controller 中做会更有意义。这样又增加了可复用性和简单性。
+不应该在 view controller 中构建复杂的 view 层次结构。你可以使用 interface builder 或者把 views 封装到一个 `UIView` 子类当中。例如，如果你要创建一个 date picker 控件，把它放到一个名为 `DatePickerView` 的类中会比把所有的事情都在 view controller 中做会更有意义。这样又增加了可复用性和简单性。
 
 如果你喜欢 Interface Builder，你也可以在 Interface Builder 中做。有些人只和 view controllers 一起使用，但你也可以单独加载 nib 文件到自定义的 views 中。在示例程序中，我们创建了一个 `PhotoCell.xib`，包含了 photo cell 的布局：
 
@@ -174,7 +174,7 @@ self.tableView.dataSource = photosArrayDataSource;
 
 ### 消息传递
 
-其他在 view controllers 中经常发生的事是与其他 view controllers，model，和 views 之间进行消息传递，这当然是 controller 应该做的，但我们要尽可能地减少代码。
+其他在 view controllers 中经常发生的事是与其他 view controllers，model，和 views 之间进行消息传递。这当然是 controller 应该做的，但我们要尽可能地减少代码。
 
 关于 view controllers 和 model 对象之间的消息传递，已经有很多阐述得很好的技术（比如 KVO 和 fetched results controllers）。但是 view controllers 之间的消息传递稍微不是那么清晰明了。
 
@@ -182,7 +182,7 @@ self.tableView.dataSource = photosArrayDataSource;
 
 ### 总结
 
-我们已经看到用来创建更小巧的 view controllers 的技术。我们并不是想把这些技术应用到每一个角落，只是我们有一个目标：写可维护的代码。知道这些模式后，我们就有更好的机会把那些笨重的 view controllers 变得更清晰。
+我们已经看到用来创建更小巧的 view controllers 的技术。我们并不是想把这些技术应用到每一个角落，只是我们有一个目标：写可维护的代码。知道这些模式后，我们就更有可能把那些笨重的 view controllers 变得更清晰。
 
 ### 扩展阅读
 
