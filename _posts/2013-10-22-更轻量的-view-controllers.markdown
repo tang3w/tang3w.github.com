@@ -199,7 +199,7 @@ self.tableView.dataSource = photosArrayDataSource;
 
 该主题下的更多文章：
 
-- [更轻量的 View Controllers][10]
+- [介绍 objc.io][10]
 - [整理 Table View 的代码][11]
 - [测试 View Controllers][12]
 - [View Controller 容器][13]
@@ -213,7 +213,7 @@ self.tableView.dataSource = photosArrayDataSource;
 [7]: http://programmers.stackexchange.com/questions/184396/mvcs-model-view-controller-store
 [8]: https://speakerdeck.com/trianglecocoa/unburdened-viewcontrollers-by-jay-thrash
 [9]: http://programmers.stackexchange.com/questions/177668/how-to-avoid-big-and-clumsy-uitableviewcontroller-on-ios
-[10]: http://www.objc.io/issue-1/lighter-view-controllers.html
+[10]: http://tang3w.com/translate/objc.io/2013/10/21/%E4%BB%8B%E7%BB%8D-objc.io.html
 [11]: http://www.objc.io/issue-1/table-views.html
 [12]: http://www.objc.io/issue-1/testing-view-controllers.html
 [13]: http://www.objc.io/issue-1/containment-view-controller.html
