@@ -81,10 +81,15 @@ Table view controllers 的 view 属性永远都是一个 table view。如果你�
 
 ### 分离关注点（Separating Concerns）
 
+当处理 table views 的时候，有许多各种各样的任务，这些任务游走在 models，controllers 和 views 之间。为了避免让 view controllers 做所有的事，我们将尽可能地把这些任务划分到合适的地方，这样有利于阅读、维护和测试。
 
+这里描述的技术是文章[更轻量的 View Controllers][3] 中的概念的延伸，请参考这篇文章来理解如何重构 data source 和 model 的逻辑。在 table views 的基础上，我们来具体看看如何在 view controllers 和 views 之间分离关注点。
+
+### Bridging the Gap Between Model Objects and Cells
 
 <p class="date"><a href="http://twitter.com/floriankugler">Florian Kugler</a>, 2013 年 6 月</p>
 
 
 [1]: http://stackoverflow.com/questions/12805003/uirefreshcontrol-issues
 [2]: http://www.objc.io/issue-1/containment-view-controller.html
+[3]: http://tang3w.com/translate/objc.io/2013/10/22/%E6%9B%B4%E8%BD%BB%E9%87%8F%E7%9A%84-view-controllers.html
