@@ -33,8 +33,15 @@ Objective-C 中有个用来 mocking 的强大工具叫做 [OCMock][3]。它是�
 
 ### SenTestKit
 
+我们将要使用的另一个工具是一个测试框架，开发者工具的一部分：[Sente][4] 的 SenTestingKit。这个上古神器从 1997 年起就伴随在 Objective-C 开发者左右，比第一款 iPhone 发布还早 10 年。现在，它已经集成到 Xcode 中了。SenTestingKit 会运行你的测试。通过 SenTestingKit，你将测试组织在类中。你需要给每一个你想测试的类创建一个测试类，类名以 `Testing` 结尾，它反应了这个类是干什么的。
+
+这些测试类的方法会做具体的测试工作。方法名必须以 `test` 开头，作为触发一个测试的条件。还有特殊的 `-setUp` 和 `-tearDown` 方法，你可以重载它们来设置每一个测试。记住，你的测试类就是个类：只要对你有帮助，随便加 properties 和辅助方法。
+
+在做测试时，一个不错的模式是为测试创建一个基础类。
+
 <p class="date"><a href="https://twitter.com/danielboedewadt">Daniel Eggert</a>, 2013 年 6 月</p>
 
 [1]: https://en.wikipedia.org/wiki/Test-driven_development
 [2]: http://tang3w.com/true/objc.io/2013/10/22/%E6%9B%B4%E8%BD%BB%E9%87%8F%E7%9A%84-view-controllers.html
 [3]: http://ocmock.org/
+[4]: http://www.sente.ch/
