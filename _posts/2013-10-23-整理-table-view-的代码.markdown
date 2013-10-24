@@ -7,7 +7,7 @@ categories:
 - objc.io
 ---
 
-<p id="state">注：这篇翻译已经过 objc.io 授权，原文链接是：<a href="http://www.objc.io/issue-1/table-views.html" title="Lighter View Controllers">Clean table view code</a></p>
+<p id="state">注：这篇翻译已经过 objc.io 授权，原文链接是：<a href="http://www.objc.io/issue-1/table-views.html" title="Clean table view code">Clean table view code</a></p>
 
 Table view 是 iOS 应用程序中非常通用的组件。所以许多代码和 table view 都有直接或间接的关系，包括提供数据、更新 table view，控制它的行为以及响应选择事件，仅举这几个例子。在这篇文章中，我们将会展示保持代码整洁和组织良好的技术。
 
