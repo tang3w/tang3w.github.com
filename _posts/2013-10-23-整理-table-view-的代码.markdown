@@ -148,14 +148,125 @@ TableViewCellConfigureBlock block = ^(PhotoCell *cell, Photo *photo) {
 
 有时多种 model 对象需要用同一类型的 cell 来表示，这种情况下，我们可以进一步让 cell 可以复用。首先，我们给 cell 定义一个 protocol，需要用这个 cell 显示的对象必须遵循这个 protocol。然后简单修改 category 中的设置方法，让它可以接受遵循这个 protocol 的任何对象。这些简单的步骤让 cell 和任何特殊的 model 对象之间得以解耦，让它可适应不同的数据类型。
 
-#### 在 Cell 中控制 Cell 的状态
+#### 在 Cell 内部控制 Cell 的状态
 
+如果你想自定义 table views 默认的高亮或选择行为，你可以实现两个 delegate 方法，把点击的 cell 修改成我们想要的样子。例如：
 
+{% highlight objective-c %}
+
+- (void)tableView:(UITableView *)tableView
+        didHighlightRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    PhotoCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    cell.photoTitleLabel.shadowColor = [UIColor darkGrayColor];
+    cell.photoTitleLabel.shadowOffset = CGSizeMake(3, 3);
+}
+
+- (void)tableView:(UITableView *)tableView
+        didUnhighlightRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    PhotoCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    cell.photoTitleLabel.shadowColor = nil;
+}
+
+{% endhighlight %}
+
+然而，这两个 delegate 方法的实现又暴露了 cell 如何实现的具体细节。如果我们想替换或重新设计 cell，我们必须改写 delegate 代码。View 的实现细节和 delegate 的实现交织在一起了。相反，我们应该把这些细节移到 cell 自身中去。
+
+{% highlight objective-c %}
+
+@implementation PhotoCell
+// ...
+- (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated
+{
+    [super setHighlighted:highlighted animated:animated];
+    if (highlighted) {
+        self.photoTitleLabel.shadowColor = [UIColor darkGrayColor];
+        self.photoTitleLabel.shadowOffset = CGSizeMake(3, 3);
+    } else {
+        self.photoTitleLabel.shadowColor = nil;
+    }
+}
+@end
+
+{% endhighlight %}
+
+总的来说，我们在努力把 view layer 和 controller layer 的实现细节分离开。delegate 肯定得清楚一个 view 该显示什么状态，但是它不应该了解如何修改 view tree 或者给 subviews 设置哪些属性以获得正确的状态。所有这些逻辑都应该封装到 view 内部，然后给外部提供一个简单地 API。
+
+#### 控制多个 Cell 类型
+
+如果一个 table view 里面有多种类型的 cell，data source 方法很快就难以控制了。在我们示例程序中，photo details table 有两种不同类型的 cell：一个用于显示几个星，另一个用来显示一个键值对。为了划分处理不同 cell 类型的代码，data source 方法简单地通过判断 cell 的类型，把任务派发给其他指定的方法。
+
+{% highlight objective-c %}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView
+         cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSString *key = self.keys[(NSUInteger) indexPath.row];
+    id value = [self.photo valueForKey:key];
+    UITableViewCell *cell;
+    if ([key isEqual:PhotoRatingKey]) {
+        cell = [self cellForRating:value indexPath:indexPath];
+    } else {
+        cell = [self detailCellForKey:key value:value];
+    }
+    return cell;
+}
+
+- (RatingCell *)cellForRating:(NSNumber *)rating
+                    indexPath:(NSIndexPath *)indexPath
+{
+    // ...
+}
+
+- (UITableViewCell *)detailCellForKey:(NSString *)key
+                                value:(id)value
+{
+    // ...
+}
+
+{% endhighlight %}
+
+#### 编辑 Table View
+
+Table view 提供了易于使用的编辑特性，允许你对 cell 进行删除或重新排序。这些事件，都可以让 table view 的 data source 通过 [delegate 方法][5]得到通知。因此，通常我们能在这些 delegate 方法中看到对数据的进行修改的操作。
+
+修改数据很明显是属于 model layer 的任务。Model 应该为诸如删除或重新排序等操作暴露一个 API，然后我们可以在 data source 方法中调用它。这样，controller 就可以扮演 view 和 model 之间的**协调者 ( coordinator ) **，而不需要知道 model 层的实现细节。并且还有额外的好处，model 的逻辑也变得更容易测试，因为它不再和 view controllers 的任务混杂在一起了。
+
+### 总结
+
+Table view controllers（以及其他的 controller 对象！）应该在 model 和 view 对象之间扮演[协调者和调解者的角色][2]。它不应该关心明显属于 view layer 或 model layer 的任务。你应该始终记住这点，这样 delegate 和 data source 方法会变得更小巧，最多包含一些简单地样板代码。
+
+这不仅减少了 table view controllers 那样的大小和复杂性，而且还把业务逻辑和 view 的逻辑放到了更合适的地方。Controller layer 的里里外外的实现细节都被封装成了简单地 API，最终，它变得更加容易理解，也更利于团队协作。
+
+### 扩展阅读
+
+- [Blog: Skinnier Controllers using View Categories][6]
+- [Table View Programming Guide][7]
+- [Cocoa Core Competencies: Controller Object][8]
 
 <p class="date"><a href="http://twitter.com/floriankugler">Florian Kugler</a>, 2013 年 6 月</p>
 
+------
+
+该主题下的更多文章：
+
+- [介绍 objc.io][9]
+- [更轻量的 View Controllers][10]
+- [测试 View Controllers][11]
+- [View Controller 容器][12]
 
 [1]: http://stackoverflow.com/questions/12805003/uirefreshcontrol-issues
 [2]: http://www.objc.io/issue-1/containment-view-controller.html
 [3]: http://tang3w.com/translate/objc.io/2013/10/22/%E6%9B%B4%E8%BD%BB%E9%87%8F%E7%9A%84-view-controllers.html
 [4]: http://tang3w.com/translate/objc.io/2013/10/22/%E6%9B%B4%E8%BD%BB%E9%87%8F%E7%9A%84-view-controllers.html#controllers
+[5]: http://developer.apple.com/library/ios/#documentation/uikit/reference/UITableViewDataSource_Protocol/Reference/Reference.html#//apple_ref/occ/intfm/UITableViewDataSource/tableView:commitEditingStyle:forRowAtIndexPath:
+[6]: http://www.sebastianrehnby.com/blog/2013/01/01/skinnier-controllers-using-view-categories/
+[7]: http://developer.apple.com/library/ios/#documentation/userexperience/conceptual/tableview_iphone/AboutTableViewsiPhone/AboutTableViewsiPhone.html
+[8]: http://developer.apple.com/library/mac/#documentation/General/Conceptual/DevPedia-CocoaCore/ControllerObject.html
+[9]: http://tang3w.com/translate/objc.io/2013/10/21/%E4%BB%8B%E7%BB%8D-objc.io.html
+[10]: http://tang3w.com/true/objc.io/2013/10/22/%E6%9B%B4%E8%BD%BB%E9%87%8F%E7%9A%84-view-controllers.html
+[11]: http://www.objc.io/issue-1/testing-view-controllers.html
+[12]: http://www.objc.io/issue-1/containment-view-controller.html
+
+
