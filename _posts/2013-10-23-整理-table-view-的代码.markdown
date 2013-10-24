@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "整理 Table View 的代码"
-published: false
+published: true
 categories:
 - translate
 - objc.io
@@ -9,7 +9,7 @@ categories:
 
 <p id="state">注：这篇翻译已经过 objc.io 授权，原文链接是：<a href="http://www.objc.io/issue-1/table-views.html" title="Lighter View Controllers">Clean table view code</a></p>
 
-Table view 是 iOS 应用程序中非常通用的组件。所以许多代码和 table view 都有直接或间接的关系，包括提供数据、更新 table view，控制它的行为以及响应选择，仅举这几个例子。在这篇文章中，我们将会展示保持代码整洁和组织良好的技术。
+Table view 是 iOS 应用程序中非常通用的组件。所以许多代码和 table view 都有直接或间接的关系，包括提供数据、更新 table view，控制它的行为以及响应选择事件，仅举这几个例子。在这篇文章中，我们将会展示保持代码整洁和组织良好的技术。
 
 ### UITableViewController vs. UIViewController
 
@@ -35,7 +35,7 @@ Table view controllers 的 view 属性永远都是一个 table view。如果你�
 
 #### Child View Controllers
 
-和完全抛弃 table view controller 不同，你还可以将它作为 child view controller 添加到其他 view controller 中（看[关于此问题的文章][2]）。然后 table view controller 继续管理它的 table view，如果你需要，parent view controller 可以关心其他的界面元素。
+和完全抛弃 table view controller 不同，你还可以将它作为 child view controller 添加到其他 view controller 中（看[关于此问题的文章][2]）。然后 table view controller 继续管理它的 table view，如果需要，parent view controller 可以关心其他的界面元素。
 
 {% highlight objective-c %}
 
@@ -54,7 +54,7 @@ Table view controllers 的 view 属性永远都是一个 table view。如果你�
 
 {% endhighlight %}
 
-如果你使用这个解决方案，你必须在 child view controller 和 parent view controller 之间建立消息传递的渠道。比如，如果用户选择了一个 table view 中的 cell，parent view controller 需要知道这个事件来推入其他 view controller。根据使用习惯，通常最清晰的方式为这个 table view controller 定义一个 delegate protocol，然后到 parent view controller 中去实现。
+如果你使用这个解决方案，你就必须在 child view controller 和 parent view controller 之间建立消息传递的渠道。比如，如果用户选择了一个 table view 中的 cell，parent view controller 需要知道这个事件来推入其他 view controller。根据使用习惯，通常最清晰的方式是为这个 table view controller 定义一个 delegate protocol，然后到 parent view controller 中去实现。
 
 {% highlight objective-c %}
 
