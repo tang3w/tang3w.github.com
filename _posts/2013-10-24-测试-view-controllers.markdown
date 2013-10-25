@@ -35,9 +35,13 @@ Objective-C 中有个用来 mocking 的强大工具叫做 [OCMock][3]。它是�
 
 我们将要使用的另一个工具是一个测试框架，开发者工具的一部分：[Sente][4] 的 SenTestingKit。这个上古神器从 1997 年起就伴随在 Objective-C 开发者左右，比第一款 iPhone 发布还早 10 年。现在，它已经集成到 Xcode 中了。SenTestingKit 会运行你的测试。通过 SenTestingKit，你将测试组织在类中。你需要给每一个你想测试的类创建一个测试类，类名以 `Testing` 结尾，它反应了这个类是干什么的。
 
-这些测试类的方法会做具体的测试工作。方法名必须以 `test` 开头，作为触发一个测试的条件。还有特殊的 `-setUp` 和 `-tearDown` 方法，你可以重载它们来设置每一个测试。记住，你的测试类就是个类：只要对你有帮助，随便加 properties 和辅助方法。
+这些测试类的方法会做具体的测试工作。方法名必须以 `test` 开头来作为触发一个测试运行的条件。还有特殊的 `-setUp` 和 `-tearDown` 方法，你可以重载它们来设置各个测试。记住，你的测试类就是个类而已：只要对你有帮助，随便加 properties 和辅助方法。
 
-在做测试时，一个不错的模式是为测试创建一个基础类。
+在做测试时，一个不错的模式是为测试创建一个基础类。然后将通用的逻辑放在里面，让测试更加轻松和集中。可以看看这个[示例程序][5]中的例子，它展示了什么时候这种模式会比较有用。我们没有使用 Xcode 的测试模板，为了让事情简单有效，我们只创建了单独的 `.m` 文件。通过把类名改成以 `Tests` 结尾，类名可以反映出我们在对什么做测试。
+
+### 与 Xcode 集成
+
+
 
 <p class="date"><a href="https://twitter.com/danielboedewadt">Daniel Eggert</a>, 2013 年 6 月</p>
 
@@ -45,3 +49,4 @@ Objective-C 中有个用来 mocking 的强大工具叫做 [OCMock][3]。它是�
 [2]: http://tang3w.com/true/objc.io/2013/10/22/%E6%9B%B4%E8%BD%BB%E9%87%8F%E7%9A%84-view-controllers.html
 [3]: http://ocmock.org/
 [4]: http://www.sente.ch/
+[5]: https://github.com/objcio/issue-1-lighter-view-controllers/blob/master/PhotoDataTests/PhotoDataTestCase.h
