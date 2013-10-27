@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "测试 View Controllers"
-published: false
+published: true
 categories:
 - translate
 - objc.io
@@ -37,11 +37,365 @@ Objective-C 中有个用来 mocking 的强大工具叫做 [OCMock][3]。它是�
 
 这些测试类的方法会做具体的测试工作。方法名必须以 `test` 开头来作为触发一个测试运行的条件。还有特殊的 `-setUp` 和 `-tearDown` 方法，你可以重载它们来设置各个测试。记住，你的测试类就是个类而已：只要对你有帮助，随便加 properties 和辅助方法。
 
-在做测试时，一个不错的模式是为测试创建一个基础类。然后将通用的逻辑放在里面，让测试更加轻松和集中。可以看看这个[示例程序][5]中的例子，它展示了什么时候这种模式会比较有用。我们没有使用 Xcode 的测试模板，为了让事情简单有效，我们只创建了单独的 `.m` 文件。通过把类名改成以 `Tests` 结尾，类名可以反映出我们在对什么做测试。
+做测试时，为测试类创建基类是个不错的模式。把通用的逻辑放到基类里面，可以让测试更简单和集中。可以通过[示例程序][5]中的例子来看看这样带来的好处。我们没有使用 Xcode 的测试模板，为了让事情简单有效，我们只创建了单独的 `.m` 文件。通过把类名改成以 `Tests` 结尾，类名可以反映出我们在对什么做测试。
 
 ### 与 Xcode 集成
 
+测试会被 build 成一个 bundle，其中包含一个动态库和你选择的资源文件。如果你要测试某些资源文件，你得把它们加到测试的 target 中，Xcode 就会将它们打包进这个 bundle 中。接着你可以通过 NSBundle 来定位这些资源文件，示例项目实现了一个 `-URLForResource:withExtension:` 方法来方便的使用它。
 
+Xcode 中的每个 `scheme` 定义了相应的测试 bundle 是哪个。通过 ⌘-R 运行程序，⌘-U 运行测试。
+
+测试的运行依附于程序的运行，当程序运行时，测试 bundle 将被注入（`injected`）。测试时，你可能不想让你的程序做太多的事，那样会对测试造成干扰。可以把下面的代码加到 app delegate 中：
+
+{% highlight objective-c %}
+
+static BOOL isRunningTests(void) __attribute__((const));
+
+- (BOOL)application:(UIApplication *)application
+        didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+    if (isRunningTests()) {
+        return YES;
+    }
+
+    //
+    // Normal logic goes here
+    //
+
+    return YES;
+}
+
+static BOOL isRunningTests(void)
+{
+    NSDictionary* environment = [[NSProcessInfo processInfo] environment];
+    NSString* injectBundle = environment[@"XCInjectBundle"];
+    return [[injectBundle pathExtension] isEqualToString:@"octest"];
+}
+
+{% endhighlight %}
+
+通过编辑 Scheme 让你给了你极大的灵活性。你可以在测试之前或之后运行脚本，也可以有多个测试 bundle。这对大型项目来说很有用。最重要的是，可以打开或关闭个别测试，这对调试测试非常有用，只是要记得把它们重新全部打开。
+
+还要记住你可以为测试代码下断点，当测试执行时，调试器会在断点处停下来。
+
+### 测试 Data Source
+
+好了，让我们开始吧。我们已经通过拆分 view controller 让测试工作变得更轻松了。现在我们要测试 `ArrayDataSource`。首先我们新建一个空的，基本的测试类。我们把 interface 和 implementation 都放到一个文件里；也没有哪个地方需要包含 `@interface`，放到一个文件会显得更加漂亮和整洁。
+
+{% highlight objective-c %}
+
+#import "PhotoDataTestCase.h"
+
+@interface ArrayDataSourceTest : PhotoDataTestCase
+@end
+
+@implementation ArrayDataSourceTest
+- (void)testNothing;
+{
+    STAssertTrue(YES, @"");
+}
+@end
+
+{% endhighlight %}
+
+这个类没做什么事，只是展示了基本的设置。当我们运行这个测试时，`-testNothing` 方法将会运行。特别地，STAssert 宏将会做琐碎的检查。注意，前缀 `ST` 源自于 SenTestingKit。这些宏和 Xcode 集成，会把失败显示到 *Issues navigator* 中。
+
+### 第一个测试
+
+我们现在把 `testNothing` 替换成一个简单、真正的测试：
+
+{% highlight objective-c %}
+
+- (void)testInitializing;
+{
+    STAssertNil([[ArrayDataSource alloc] init], @"Should not be allowed.");
+    TableViewCellConfigureBlock block = ^(UITableViewCell *a, id b){};
+    id obj1 = [[ArrayDataSource alloc] initWithItems:@[]
+                                      cellIdentifier:@"foo"
+                                  configureCellBlock:block];
+    STAssertNotNil(obj1, @"");
+}
+
+{% endhighlight objective-c %}
+
+### 实践 Mocking
+
+接着，我们想测试 `ArrayDataSource` 实现的方法：
+
+{% highlight objective-c %}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView
+         cellForRowAtIndexPath:(NSIndexPath *)indexPath;
+
+{% endhighlight %}
+
+为此，我们创建一个测试方法：
+
+{% highlight objective-c %}
+
+- (void)testCellConfiguration;
+
+{% endhighlight %}
+
+首先，创建一个 data source：
+
+{% highlight objective-c %}
+
+__block UITableViewCell *configuredCell = nil;
+__block id configuredObject = nil;
+TableViewCellConfigureBlock block = ^(UITableViewCell *a, id b){
+    configuredCell = a;
+    configuredObject = b;
+};
+ArrayDataSource *dataSource = [[ArrayDataSource alloc] initWithItems:@[@"a", @"b"]
+                                                      cellIdentifier:@"foo"
+                                                  configureCellBlock:block];
+
+{% endhighlight %}
+
+注意，`configureCellBlock` 除了存储对象以外什么都没做，这可以让我们可以更简单地测试它。
+
+然后，我们为 table view 创建一个 *mock object*：
+
+{% highlight objective-c %}
+
+id mockTableView = [OCMockObject mockForClass:[UITableView class]];
+
+{% endhighlight %}
+
+Data source 将在传进来的 table view 上调用 `-dequeueReusableCellWithIdentifier:forIndexPath:` 方法。我们将告诉 mock object 当它收到这个消息时要做什么。首先创建一个 cell，然后设置 *mock*。
+
+{% highlight objective-c %}
+
+UITableViewCell *cell = [[UITableViewCell alloc] init];
+NSIndexPath* indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+[[[mockTableView expect] andReturn:cell]
+        dequeueReusableCellWithIdentifier:@"foo"
+                             forIndexPath:indexPath];
+
+{% endhighlight %}
+
+第一次看到它可能会觉得有点迷惑。我们在这里所做的，是让 mock *记录*特定的调用。Mock 不是一个真正的 table view；我们只是假装它是。`-expect` 方法允许我们设置一个 mock，让它知道当这个方法调用时要做什么。
+
+另外，`-expect` 方法也告诉 mock 这个调用必须发生。当我们稍后在 mock 上调用 `-verify` 时，如果那个方法没有被调用过，测试就会失败。相应地，`-stub` 方法也用来设置 mock 对象，但它不关心方法是否被调用过。
+
+现在，我们要触发代码运行。我们就调用我们希望测试的方法。
+
+{% highlight objective-c %}
+
+NSIndexPath* indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+id result = [dataSource tableView:mockTableView
+            cellForRowAtIndexPath:indexPath];
+
+{% endhighlight %}
+
+然后我们测试是否一切正常：
+
+{% highlight objective-c %}
+
+STAssertEquals(result, cell, @"Should return the dummy cell.");
+STAssertEquals(configuredCell, cell, @"This should have been passed to the block.");
+STAssertEqualObjects(configuredObject, @"a", @"This should have been passed to the block.");
+[mockTableView verify];
+
+{% endhighlight %}
+
+`STAssert` 宏测试值的相等性。注意，前两个测试，我们通过比较指针来完成；我们不想使用 `-isEqual:`。我们实际希望测试的是 `result`，`cell` 和 `configuredCell` 都是同一个对象。第三个测试要用 `-isEqual:`，最后我们调用 mock 的 `-verify` 方法。
+
+注意，在示例程序中，我们是这样设置 mock 的：
+
+{% highlight objective-c %}
+
+id mockTableView = [self autoVerifiedMockForClass:[UITableView class]];
+
+{% endhighlight %}
+
+这是我们测试基类中的一个方便的封装，它会在测试最后自动调用 `-verify` 方法。
+
+### 测试 UITableViewController
+
+下面，我们转向 PhotosViewController。它是个 `UITableViewController` 的子类，它使用了我们刚才测试过的 data source。View controller 剩下的代码已经相当简单了。
+
+我们想测试点击 cell 后把我们带到详情页面，即一个 `PhotoViewController` 的实例被 push 到 navigation controller 里面。我们再次使用 mocking 来让测试尽可能不依赖于其他部分。
+
+首先我们创建一个 `UINavigationController` 的 mock：
+
+{% highlight objective-c %}
+
+id mockNavController = [OCMockObject mockForClass:[UINavigationController class]];
+
+{% endhighlight %}
+
+接下来，我们要使用 *partial mocking*。我们希望 `PhotosViewController` 实例的 `navigationController` 返回 `mockNavController`。我们不能直接设置 navigation controller，所以我们简单地对 `PhotosViewController` 实例 stub 这个方法，让它返回 `mockNavController` 就可以了。
+
+{% highlight objective-c %}
+
+PhotosViewController *photosViewController = [[PhotosViewController alloc] init];
+id photosViewControllerMock = [OCMockObject partialMockForObject:photosViewController];
+[[[photosViewControllerMock stub] andReturn:mockNavController] navigationController];
+
+{% endhighlight %}
+
+现在，任何时候对 `photosViewController` 调用 `-navigationController` 方法，都会返回 `mockNavController`。这是个强大的技巧，OCMock 有这种本领。
+
+现在，我们要告诉 navigation controller mock 我们调用的期望，即，一个 photo 不为 nil 的 detail view controller。
+
+{% highlight objective-c %}
+
+UIViewController* viewController = [OCMArg checkWithBlock:^BOOL(id obj) {
+    PhotoViewController *vc = obj;
+    return ([vc isKindOfClass:[PhotoViewController class]] &&
+            (vc.photo != nil));
+}];
+[[mockNavController expect] pushViewController:viewController animated:YES];
+
+{% endhighlight %}
+
+现在，我们触发 view 加载，并且模拟一行被点击：
+
+{% highlight objective-c %}
+
+UIView *view = photosViewController.view;
+STAssertNotNil(view, @"");
+NSIndexPath* indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+[photosViewController tableView:photosViewController.tableView
+        didSelectRowAtIndexPath:indexPath];
+
+{% endhighlight %}
+
+最后我们验证 mocks 上期望的方法被调用过：
+
+{% highlight objective-c %}
+
+[mockNavController verify];
+[photosViewControllerMock verify];
+
+{% endhighlight %}
+
+现在我们有了一个测试，用来测试和 navigation controller 的交互，以及正确 view controller 的创建。
+
+又一次地，我们在示例程序中使用了便捷的方法：
+
+{% highlight objective-c %}
+
+- (id)autoVerifiedMockForClass:(Class)aClass;
+- (id)autoVerifiedPartialMockForObject:(id)object;
+
+{% endhighlight %}
+
+于是，我们不需要记住调用 `-verify`。
+
+### 进一步探索
+
+就像你从上面看到的那样，*partial mocking* 非常强大。如果你看看 `-[PhotosViewController setupTableView]` 方法的源码，你就会看到它是如何从 app delegate 中取出 model 对象的。
+
+{% highlight objective-c %}
+
+NSArray *photos = [AppDelegate sharedDelegate].store.sortedPhotos;
+
+{% endhighlight %}
+
+上面的测试依赖于这行代码。打破这种依赖的一种方式是再次使用 *partial mocking*，让 app delegate 返回预定义的数据，就像这样：
+
+{% highlight objective-c %}
+
+id storeMock; // assume we've set this up
+id appDelegate = [AppDelegate sharedDelegate]
+id appDelegateMock = [OCMockObject partialMockForObject:appDelegate];
+[[[appDelegateMock stub] andReturn:storeMock] store];
+
+{% endhighlight %}
+
+现在，无论 `[AppDelegate sharedDelegate].store` 时候调用过，它也会返回 `storeMock`。可以把它发挥到极致。确保让你的测试尽可能保持简单，除非确实有复杂的需要。
+
+### 牢记的事
+
+Partial mocks 会修改 mocking 的对象，并且在 mocks 的生存期一直有效。你可以通过提前调用 `[aMock stopMocking]` 来停止这种行为。大多数时候，你希望 partial mock 在整个测试期间都保持有效。确保在测试方法最后放置 `[aMock verify]`。否则 ARC 会过早 dealloc 这个 mock。而且不管怎样，你都希望加上 `-verify`。
+
+### 测试 NIB 加载
+
+`PhotoCell` 设置在一个 NIB 中，我们可以写一个简单的测试来检查 outlets 设置得是否正确。我们来回顾一下 `PhotoCell` 类：
+
+{% highlight objective-c %}
+
+@interface PhotoCell : UITableViewCell
+
++ (UINib *)nib;
+
+@property (weak, nonatomic) IBOutlet UILabel* photoTitleLabel;
+@property (weak, nonatomic) IBOutlet UILabel* photoDateLabel;
+
+@end
+
+{% endhighlight %}
+
+我们的简单测试的实现看上去是这样：
+
+{% highlight objective-c %}
+
+@implementation PhotoCellTests
+
+- (void)testNibLoading;
+{
+    UINib *nib = [PhotoCell nib];
+    STAssertNotNil(nib, @"");
+
+    NSArray *a = [nib instantiateWithOwner:nil options:@{}];
+    STAssertEquals([a count], (NSUInteger) 1, @"");
+    PhotoCell *cell = a[0];
+    STAssertTrue([cell isMemberOfClass:[PhotoCell class]], @"");
+
+    // Check that outlets are set up correctly:
+    STAssertNotNil(cell.photoTitleLabel, @"");
+    STAssertNotNil(cell.photoDateLabel, @"");
+}
+
+@end
+
+{% endhighlight %}
+
+非常基础，但是它能工作。
+
+值得一提的是，当有什么发生变动时，测试和相应的类或 nib 需要同时更新。这是事实。你需要把它和 outlets 变化的可能性做权衡。如果你用了 `.xib` 文件，你可能要注意了，这是经常发生的事。
+
+### 关于 Class 和 Injection
+
+我们已经从*与 Xcode 集成*得知，测试 bundle 会注入到应用程序中。省略注入的如何工作的细节（它本身是个巨大的话题），简单地说：注入是把待注入的 bundle（我们的测试 bundle）中的 Objective-C 类添加到运行的应用程序中。这很好，因为这样允许我们运行测试了。
+
+还有一件事会很迷惑，那就是如果我们同时把一个类添加到应用程序和测试 bundle中。如果在上面的示例程序中，（偶然）把 `PhotoCell` 类添加到测试 bundle 和应用程序，然后在测试 bundle 中调用 `[PhotoCell class]` 会返回一个不同的指针（你应用程序中的那个类）。于是我们的测试将会失败：
+
+{% highlight objective-c %}
+
+STAssertTrue([cell isMemberOfClass:[PhotoCell class]], @"");
+
+{% endhighlight %}
+
+再一次声明：注入很复杂。你应该避免：不要把应用程序中的 `.m` 文件添加到测试 target 中。否则你会得到预想不到的行为。
+
+### 额外的思考
+
+如果你使用一个持续集成的解决方案，让你的测试启动和运行是一个好主意。详细的描述超过了本文的范围。这些脚本通过 `RunUnitTests` 脚本触发。还有个 `TEST_AFTER_BUILD` 环境变量。
+
+一个有趣的选择是创建单独的测试 bundle 来自动化性能测试。你可以在测试方法里做任何你想做的。定时调用一些方法并使用 `STAssert` 来检查它们是否在特定阈值里面是一种选择。
+
+### 扩展阅读
+
+- [Test-driven development][6]
+- [OCMock][7]
+- [Xcode Unit Testing Guide][8]
+- [Book: Test Driven Development: By Example][9]
+- [Blog: Quality Coding][10]
+- [Blog: iOS Unit Testing][11]
+- [Blog: Secure Mac Programing][12]
+
+------
+
+该主题下的更多文章：
+
+- [介绍 objc.io][13]
+- [更轻量的 View Controllers][14]
+- [整理 Table View 的代码][15]
+- [View Controller 容器][16]
 
 <p class="date"><a href="https://twitter.com/danielboedewadt">Daniel Eggert</a>, 2013 年 6 月</p>
 
@@ -50,3 +404,14 @@ Objective-C 中有个用来 mocking 的强大工具叫做 [OCMock][3]。它是�
 [3]: http://ocmock.org/
 [4]: http://www.sente.ch/
 [5]: https://github.com/objcio/issue-1-lighter-view-controllers/blob/master/PhotoDataTests/PhotoDataTestCase.h
+[6]: https://en.wikipedia.org/wiki/Test-driven_development
+[7]: http://ocmock.org/
+[8]: https://developer.apple.com/library/ios/documentation/DeveloperTools/Conceptual/UnitTesting/
+[9]: http://www.amazon.com/Test-Driven-Development-Kent-Beck/dp/0321146530
+[10]: http://qualitycoding.org/
+[11]: http://iosunittesting.com/
+[12]: http://blog.securemacprogramming.com/?s=testing&searchsubmit=Search
+[13]: http://tang3w.com/translate/objc.io/2013/10/21/%E4%BB%8B%E7%BB%8D-objc.io.html
+[14]: http://tang3w.com/true/objc.io/2013/10/22/%E6%9B%B4%E8%BD%BB%E9%87%8F%E7%9A%84-view-controllers.html
+[15]: http://tang3w.com/translate/objc.io/2013/10/23/%E6%95%B4%E7%90%86-table-view-%E7%9A%84%E4%BB%A3%E7%A0%81.html
+[16]: http://www.objc.io/issue-1/containment-view-controller.html
