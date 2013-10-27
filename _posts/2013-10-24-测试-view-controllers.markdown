@@ -9,7 +9,7 @@ categories:
 
 <p id="state">注：这篇翻译已经过 objc.io 授权，原文链接是：<a href="http://www.objc.io/issue-1/testing-view-controllers.html" title="Testing View Controllers">Testing View Controllers</a></p>
 
-我们不是迷信测试，但它应该能帮助我们加快开发进度，并且让事情变得更有趣。
+我们不是信奉测试，但它应该帮助我们加快开发进度，并且让事情变得更有趣。
 
 ### 让事情保持简单
 
@@ -17,7 +17,7 @@ categories:
 
 测试 UI 部分通常很麻烦，因为它们包含太多活动部件。通常，view controller 需要和大量的 model 和 view 类交互。为了使 view controller 便于测试，我们要让任务尽量分离。
 
-幸好，我们在[更轻量的 view controller][2] 这篇文章中的阐述的技术可以让测试更加简单。通常，如果你发现有些地方很难做测试，这就说明你的设计出问题了，你应该重构它。你可以重新参考[更轻量的 view controller][2] 来获得一些帮助。总的目标就是有清晰的关注点分离。每个类只做一件事，并且做好。这样就可以让你测试一件事。
+幸好，我们在[更轻量的 view controller][2] 这篇文章中的阐述的技术可以让测试更加简单。通常，如果你发现有些地方很难做测试，这就说明你的设计出了问题，你应该重构它。你可以重新参考[更轻量的 view controller][2] 这篇文章来获得一些帮助。总的目标就是有清晰的关注点分离。每个类只做一件事，并且做好。这样就可以让你只测试这件事。
 
 记住：测试越多，回报的增长趋势越慢。首先你应该做简单的测试。当你觉得满意时，再加入更多复杂的测试。
 
@@ -35,13 +35,13 @@ Objective-C 中有个用来 mocking 的强大工具叫做 [OCMock][3]。它是�
 
 我们将要使用的另一个工具是一个测试框架，开发者工具的一部分：[Sente][4] 的 SenTestingKit。这个上古神器从 1997 年起就伴随在 Objective-C 开发者左右，比第一款 iPhone 发布还早 10 年。现在，它已经集成到 Xcode 中了。SenTestingKit 会运行你的测试。通过 SenTestingKit，你将测试组织在类中。你需要给每一个你想测试的类创建一个测试类，类名以 `Testing` 结尾，它反应了这个类是干什么的。
 
-这些测试类的方法会做具体的测试工作。方法名必须以 `test` 开头来作为触发一个测试运行的条件。还有特殊的 `-setUp` 和 `-tearDown` 方法，你可以重载它们来设置各个测试。记住，你的测试类就是个类而已：只要对你有帮助，随便加 properties 和辅助方法。
+这些测试类的方法会做具体的测试工作。方法名必须以 `test` 开头来作为触发一个测试运行的条件。还有特殊的 `-setUp` 和 `-tearDown` 方法，你可以重载它们来设置各个测试。记住，你的测试类就是个类而已：只要对你有帮助，随便在里面加 properties 和辅助方法。
 
 做测试时，为测试类创建基类是个不错的模式。把通用的逻辑放到基类里面，可以让测试更简单和集中。可以通过[示例程序][5]中的例子来看看这样带来的好处。我们没有使用 Xcode 的测试模板，为了让事情简单有效，我们只创建了单独的 `.m` 文件。通过把类名改成以 `Tests` 结尾，类名可以反映出我们在对什么做测试。
 
 ### 与 Xcode 集成
 
-测试会被 build 成一个 bundle，其中包含一个动态库和你选择的资源文件。如果你要测试某些资源文件，你得把它们加到测试的 target 中，Xcode 就会将它们打包进这个 bundle 中。接着你可以通过 NSBundle 来定位这些资源文件，示例项目实现了一个 `-URLForResource:withExtension:` 方法来方便的使用它。
+测试会被 build 成一个 bundle，其中包含一个动态库和你选择的资源文件。如果你要测试某些资源文件，你得把它们加到测试的 target 中，Xcode 就会将它们打包到一个 bundle 中。接着你可以通过 NSBundle 来定位这些资源文件，示例项目实现了一个 `-URLForResource:withExtension:` 方法来方便的使用它。
 
 Xcode 中的每个 `scheme` 定义了相应的测试 bundle 是哪个。通过 ⌘-R 运行程序，⌘-U 运行测试。
 
@@ -74,13 +74,13 @@ static BOOL isRunningTests(void)
 
 {% endhighlight %}
 
-通过编辑 Scheme 让你给了你极大的灵活性。你可以在测试之前或之后运行脚本，也可以有多个测试 bundle。这对大型项目来说很有用。最重要的是，可以打开或关闭个别测试，这对调试测试非常有用，只是要记得把它们重新全部打开。
+编辑 Scheme 给了你极大的灵活性。你可以在测试之前或之后运行脚本，也可以有多个测试 bundle。这对大型项目来说很有用。最重要的是，可以打开或关闭个别测试，这对调试测试非常有用，只是要记得把它们重新全部打开。
 
 还要记住你可以为测试代码下断点，当测试执行时，调试器会在断点处停下来。
 
 ### 测试 Data Source
 
-好了，让我们开始吧。我们已经通过拆分 view controller 让测试工作变得更轻松了。现在我们要测试 `ArrayDataSource`。首先我们新建一个空的，基本的测试类。我们把 interface 和 implementation 都放到一个文件里；也没有哪个地方需要包含 `@interface`，放到一个文件会显得更加漂亮和整洁。
+好了，让我们开始吧。我们已经通过拆分 view controller 让测试工作变得更轻松了。现在我们要测试 `ArrayDataSource`。首先我们新建一个空的，基本的测试类。我们把接口和实现都放到一个文件里；也没有哪个地方需要包含 `@interface`，放到一个文件会显得更加漂亮和整洁。
 
 {% highlight objective-c %}
 
@@ -98,7 +98,7 @@ static BOOL isRunningTests(void)
 
 {% endhighlight %}
 
-这个类没做什么事，只是展示了基本的设置。当我们运行这个测试时，`-testNothing` 方法将会运行。特别地，STAssert 宏将会做琐碎的检查。注意，前缀 `ST` 源自于 SenTestingKit。这些宏和 Xcode 集成，会把失败显示到 *Issues navigator* 中。
+这个类没做什么事，只是展示了基本的设置。当我们运行这个测试时，`-testNothing` 方法将会运行。特别地，`STAssert` 宏将会做琐碎的检查。注意，前缀 `ST` 源自于 `SenTestingKit`。这些宏和 Xcode 集成，会把失败显示到 *Issues navigator* 中。
 
 ### 第一个测试
 
@@ -155,7 +155,7 @@ ArrayDataSource *dataSource = [[ArrayDataSource alloc] initWithItems:@[@"a", @"b
 
 注意，`configureCellBlock` 除了存储对象以外什么都没做，这可以让我们可以更简单地测试它。
 
-然后，我们为 table view 创建一个 *mock object*：
+然后，我们为 table view 创建一个 *mock 对象*：
 
 {% highlight objective-c %}
 
@@ -362,7 +362,7 @@ Partial mocks 会修改 mocking 的对象，并且在 mocks 的生存期一直�
 
 我们已经从*与 Xcode 集成*得知，测试 bundle 会注入到应用程序中。省略注入的如何工作的细节（它本身是个巨大的话题），简单地说：注入是把待注入的 bundle（我们的测试 bundle）中的 Objective-C 类添加到运行的应用程序中。这很好，因为这样允许我们运行测试了。
 
-还有一件事会很迷惑，那就是如果我们同时把一个类添加到应用程序和测试 bundle中。如果在上面的示例程序中，（偶然）把 `PhotoCell` 类添加到测试 bundle 和应用程序，然后在测试 bundle 中调用 `[PhotoCell class]` 会返回一个不同的指针（你应用程序中的那个类）。于是我们的测试将会失败：
+还有一件事会很让人迷惑，那就是如果我们同时把一个类添加到应用程序和测试 bundle中。如果在上面的示例程序中，（偶然）把 `PhotoCell` 类添加到测试 bundle 和应用程序，然后在测试 bundle 中调用 `[PhotoCell class]` 会返回一个不同的指针（你应用程序中的那个类）。于是我们的测试将会失败：
 
 {% highlight objective-c %}
 
