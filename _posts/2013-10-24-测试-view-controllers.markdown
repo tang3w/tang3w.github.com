@@ -388,6 +388,8 @@ STAssertTrue([cell isMemberOfClass:[PhotoCell class]], @"");
 - [Blog: iOS Unit Testing][11]
 - [Blog: Secure Mac Programing][12]
 
+<p class="date"><a href="https://twitter.com/danielboedewadt">Daniel Eggert</a>, 2013 年 6 月</p>
+
 ------
 
 该主题下的更多文章：
@@ -396,8 +398,6 @@ STAssertTrue([cell isMemberOfClass:[PhotoCell class]], @"");
 - [更轻量的 View Controllers][14]
 - [整理 Table View 的代码][15]
 - [View Controller 容器][16]
-
-<p class="date"><a href="https://twitter.com/danielboedewadt">Daniel Eggert</a>, 2013 年 6 月</p>
 
 [1]: https://en.wikipedia.org/wiki/Test-driven_development
 [2]: http://tang3w.com/true/objc.io/2013/10/22/%E6%9B%B4%E8%BD%BB%E9%87%8F%E7%9A%84-view-controllers.html

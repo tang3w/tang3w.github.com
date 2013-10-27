@@ -219,5 +219,5 @@ self.tableView.dataSource = photosArrayDataSource;
 [9]: http://programmers.stackexchange.com/questions/177668/how-to-avoid-big-and-clumsy-uitableviewcontroller-on-ios
 [10]: http://tang3w.com/translate/objc.io/2013/10/21/%E4%BB%8B%E7%BB%8D-objc.io.html
 [11]: http://tang3w.com/translate/objc.io/2013/10/23/%E6%95%B4%E7%90%86-table-view-%E7%9A%84%E4%BB%A3%E7%A0%81.html
-[12]: http://www.objc.io/issue-1/testing-view-controllers.html
+[12]: http://localhost:4000/translate/objc.io/2013/10/24/%E6%B5%8B%E8%AF%95-view-controllers.html
 [13]: http://www.objc.io/issue-1/containment-view-controller.html
