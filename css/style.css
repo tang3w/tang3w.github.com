@@ -13,7 +13,7 @@ address,caption,cite,code,dfn,em,strong,th,var {
 	font-style:normal;
 	font-weight:normal;
 }
-ol,ul {
+ul {
 	list-style:none;
 }
 caption,th {
@@ -100,7 +100,7 @@ div#content img, div#content object {
 	-moz-box-shadow:0 1px 0 #FFFFFF;
 	max-width: 700px;
 }
-div#content li {
+div#content ul li {
 	list-style:disc inside none;
 	margin-left:10px;
 }
@@ -456,4 +456,8 @@ h2.title {
     padding: 20px;
     overflow: auto;
     background: #eeeeee;
+}
+
+div#content ol li {
+    list-style-position: inside;
 }
