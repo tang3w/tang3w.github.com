@@ -29,11 +29,11 @@ UIWindow 作为作为一个应用程序的根视图（root view），是旋转�
 
 ![Tunnel screenshot][3]
 
-为了寻找对跖点，也称作相反的坐标，将拿着铲子的小孩四处移动，地图会告诉你对应的出口位置在哪里。点击雷达按钮，地图会翻转过来显示位置的名称。
+为了寻找[对跖点][8]，也称作相反的坐标，将拿着铲子的小孩四处移动，地图会告诉你对应的出口位置在哪里。点击雷达按钮，地图会翻转过来显示位置的名称。
 
 屏幕上有两个 map view controllers。每个都需要控制地图的拖动，标注和更新。翻过来会显示两个新的 view controllers，用来检索地理位置。所有的 view controllers 都包含于一个 parent view controller 中，它持有它们的 views，并保证正确的布局和旋转行为。
 
-Root view controller 有两个 container views。添加它们是为了让布局，以及 child view controllers 的 views 的动画做起来更容易，我们即将看到。
+Root view controller 有两个 container views。添加它们是为了让布局，以及 child view controllers 的 views 的动画做起来更容易，我们马上就可以看到。
 
 {% highlight objective-c %}
 
@@ -154,7 +154,7 @@ Child view controller 应该包含管理它们自己的 view 树的必要逻辑�
 
 {% endhighlight %}
 
-和你选择的从 child 到 parent view controller 消息传递的技术（KVO，通知，或者委托模式）相独立地，目标都是一样的：child view controller 应该独立和可复用。在我们的例子中，我们可以将某个 child view controller 推入到一个 navigation 栈中，但是仍然可以通过相同的 API 进行消息传递。
+和你选择的从 child 到 parent view controller 消息传递的技术（KVO，通知，或者委托模式）相独立地，我们的目标都是一样的：child view controller 应该独立和可复用。在我们的例子中，我们可以将某个 child view controller 推入到一个 navigation 栈中，但仍然可以通过相同的 API 进行消息传递。
 
 <p class="date"><a href="https://twitter.com/rickigregersen">Ricki Gregersen</a>, 2013 年 6 月</p>
 
@@ -174,3 +174,4 @@ Child view controller 应该包含管理它们自己的 view 树的必要逻辑�
 [5]: http://tang3w.com/translate/objc.io/2013/10/22/%E6%9B%B4%E8%BD%BB%E9%87%8F%E7%9A%84-view-controllers.html
 [6]: http://tang3w.com/translate/objc.io/2013/10/23/%E6%95%B4%E7%90%86-table-view-%E7%9A%84%E4%BB%A3%E7%A0%81.html
 [7]: http://tang3w.com/translate/objc.io/2013/10/24/%E6%B5%8B%E8%AF%95-view-controllers.html
+[8]: http://en.wikipedia.org/wiki/Antipodes
