@@ -9,3 +9,34 @@ categories:
 ---
 
 <p id="state">注：这篇翻译已经过 objc.io 授权，原文链接是：<a href="http://www.objc.io/issue-2/concurrency-apis-and-pitfalls.html" title="Concurrent Programming: APIs and Challenges">Concurrent Programming: APIs and Challenges</a></p>
+
+[并发][1]描述了同时运行多个任务的概念。这既可以通过单个 CPU 核心以[时分][2]的方式发生；也可以真正以并行的方式发生，只要有多个 CPU 核心可用。OS X 和 iOS 提供了若干不同的 APIs 来使用并发编程。每一种 APIs 都有不同的能力和限制，让他们可以适用于不同的任务。他们也位于不同的抽象级别。你可以用运用非常原生的方式来做，但与此同时，你也有重大的责任来让事情保持正确。
+
+并发编程是一个非常困难的主题，包含很多复杂的问题和缺陷，当你使用如 Grand Central Dispatch 或 `NSOperationQueue` 这些 APIs 时很容易忘记。这篇文章首先对 OS X 和 iOS 上不同的并发 APIs 做了概览，然后深入挖掘并发编程固有的挑战，这与你具体使用的 API 是相独立的。
+
+### OS X 和 iOS 上的并发 APIs
+
+Apple 的移动和桌面操作系统为并发编程提供了相同的 APIs。在本文中，我们会看看 `pthread`，`NSThread`，Grand Central Dispatch，`NSOperationQueue` 以及 `NSRunLoop`。从技术上来说，run loops 是这些当中最奇怪的一个，因为它们不会真正使用并行。但是它和我们这个主题很接近，所以值得我们仔细看看。
+
+我们将会从低级的 APIs 开始，逐渐带你到更高级的。我们选择这条路线是因为高级的 APIs 建立在低级的 APIs 上面。然而，当你选择实际使用的 API 时，你应该以相反的顺序：选择最高级别的抽象来完成工作，让你的并发模型保持简单。
+
+如果你对我们为什么坚持推荐更高级别的抽象和简单的并发代码，你应该阅读本文的第二部分，[并发编程的挑战][3]，还有 [Peter Steinberger 的关于线程安全的文章][4]。
+
+### 线程
+
+[线程][5]是进程的子单元，进程可以被操作系统的调度器单独地调度。实际上，所有并发 APIs 底层都建立在线程上面，Grand Central Dispatch 和 operation queues 都是这样。
+
+多个线程可以在单个 CPU 核心上同时执行（或者至少感觉它们是同时执行的）。操作系统会给每个线程赋予小的运行时间片。如果有多个 CPU 核心可以利用，那么多个线程就可以真正以并行的方式执行，因此减少了完成某个工作的总的时间。
+
+你可以使用 Instruments 中的 [CPU strategy view][6] 来了解你的代码或框架代码在多核上调度执行的情况。
+
+<p class="date"><a href="http://twitter.com/floriankugler">Florian Kugler</a>, 2013 年 7 月</p>
+
+------
+
+[1]: http://en.wikipedia.org/wiki/Concurrency_%28computer_science%29
+[2]: http://en.wikipedia.org/wiki/Preemption_%28computing%29
+[3]: http://www.objc.io/issue-2/concurrency-apis-and-pitfalls.html#challenges
+[4]: http://www.objc.io/issue-2/thread-safe-class-design.html
+[5]: http://en.wikipedia.org/wiki/Thread_%28computing%29
+[6]: http://developer.apple.com/library/mac/#documentation/DeveloperTools/Conceptual/InstrumentsUserGuide/AnalysingCPUUsageinYourOSXApp/AnalysingCPUUsageinYourOSXApp.html
