@@ -4,6 +4,7 @@ title: "更轻量的 View Controllers"
 published: true
 categories:
 - translate
+- Objective-C
 - objc.io
 ---
 

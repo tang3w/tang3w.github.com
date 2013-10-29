@@ -4,6 +4,7 @@ title: "介绍 objc.io"
 published: true
 categories:
 - translate
+- Objective-C
 - objc.io
 ---
 

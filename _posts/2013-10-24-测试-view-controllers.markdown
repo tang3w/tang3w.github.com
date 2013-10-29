@@ -4,6 +4,7 @@ title: "测试 View Controllers"
 published: true
 categories:
 - translate
+- Objective-C
 - objc.io
 ---
 
