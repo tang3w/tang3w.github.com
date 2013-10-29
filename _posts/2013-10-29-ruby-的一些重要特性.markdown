@@ -1,0 +1,11 @@
+---
+layout: post
+title: "Ruby 的一些重要特性"
+published: false
+categories:
+- Ruby
+---
+
+### 类是开放的
+
+Ruby 中的类是开放的
