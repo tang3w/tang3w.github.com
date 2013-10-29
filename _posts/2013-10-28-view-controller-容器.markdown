@@ -8,7 +8,7 @@ categories:
 - objc.io
 ---
 
-<p id="state">注：这篇翻译已经过 objc.io 授权，原文链接是：<a href="http://www.objc.io/issue-1/testing-view-controllers.html" title="Testing View Controllers">Testing View Controllers</a></p>
+<p id="state">注：这篇翻译已经过 objc.io 授权，原文链接是：<a href="http://www.objc.io/issue-1/containment-view-controller.html" title="View Controller Containment">View Controller Containment</a></p>
 
 在 iOS 5 之前，view controller 容器只是 Apple 公司的一个福利。实际上，在 view controller 编程指南中还有一段申明，你不应该使用它们。Apple 对 view controllers 的总的建议是“一个 view controller 管理一个全屏幕的内容”。这个建议后来被改为“一个 view controller 管理一个自包含的内容单元”。为什么 Apple 不想让我们构建自己的 tab bar controllers 和 navigation controllers？或者更确切地说，这段代码有什么问题：
 
