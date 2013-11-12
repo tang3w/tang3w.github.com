@@ -171,8 +171,8 @@ Child view controller 应该包含管理它们自己的 view 树的必要逻辑�
 [1]: http://www.objc.io/images/issue-1/view-insertion@2x.png
 [2]: https://github.com/RickiG/view-controller-containment
 [3]: http://www.objc.io/images/issue-1/tunnel-screenshot@2x.png
-[4]: http://tang3w.com/translate/objective-c/2013/10/21/%E4%BB%8B%E7%BB%8D-objc.io.html
-[5]: http://tang3w.com/translate/objective-c/2013/10/22/%E6%9B%B4%E8%BD%BB%E9%87%8F%E7%9A%84-view-controllers.html
-[6]: http://tang3w.com/translate/objective-c/2013/10/23/%E6%95%B4%E7%90%86-table-view-%E7%9A%84%E4%BB%A3%E7%A0%81.html
-[7]: http://tang3w.com/translate/objective-c/2013/10/24/%E6%B5%8B%E8%AF%95-view-controllers.html
+[4]: http://tang3w.com/translate/objective-c/objc.io/2013/10/21/%E4%BB%8B%E7%BB%8D-objc.io.html
+[5]: http://tang3w.com/translate/objective-c/objc.io/2013/10/22/%E6%9B%B4%E8%BD%BB%E9%87%8F%E7%9A%84-view-controllers.html
+[6]: http://tang3w.com/translate/objective-c/objc.io/2013/10/23/%E6%95%B4%E7%90%86-table-view-%E7%9A%84%E4%BB%A3%E7%A0%81.html
+[7]: http://tang3w.com/translate/objective-c/objc.io/2013/10/24/%E6%B5%8B%E8%AF%95-view-controllers.html
 [8]: http://en.wikipedia.org/wiki/Antipodes
