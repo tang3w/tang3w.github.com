@@ -412,7 +412,7 @@ STAssertTrue([cell isMemberOfClass:[PhotoCell class]], @"");
 [10]: http://qualitycoding.org/
 [11]: http://iosunittesting.com/
 [12]: http://blog.securemacprogramming.com/?s=testing&searchsubmit=Search
-[13]: http://tang3w.com/translate/objc.io/2013/10/21/%E4%BB%8B%E7%BB%8D-objc.io.html
-[14]: http://tang3w.com/translate/objc.io/2013/10/22/%E6%9B%B4%E8%BD%BB%E9%87%8F%E7%9A%84-view-controllers.html
-[15]: http://tang3w.com/translate/objc.io/2013/10/23/%E6%95%B4%E7%90%86-table-view-%E7%9A%84%E4%BB%A3%E7%A0%81.html
-[16]: http://tang3w.com/translate/objc.io/2013/10/28/view-controller-%E5%AE%B9%E5%99%A8.html
+[13]: http://tang3w.com/translate/objective-c/2013/10/21/%E4%BB%8B%E7%BB%8D-objc.io.html
+[14]: http://tang3w.com/translate/objective-c/2013/10/22/%E6%9B%B4%E8%BD%BB%E9%87%8F%E7%9A%84-view-controllers.html
+[15]: http://tang3w.com/translate/objective-c/2013/10/23/%E6%95%B4%E7%90%86-table-view-%E7%9A%84%E4%BB%A3%E7%A0%81.html
+[16]: http://tang3w.com/translate/objective-c/2013/10/28/view-controller-%E5%AE%B9%E5%99%A8.html

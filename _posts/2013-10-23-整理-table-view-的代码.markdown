@@ -265,9 +265,9 @@ Table view controllers（以及其他的 controller 对象！）应该在 model 
 [6]: http://www.sebastianrehnby.com/blog/2013/01/01/skinnier-controllers-using-view-categories/
 [7]: http://developer.apple.com/library/ios/#documentation/userexperience/conceptual/tableview_iphone/AboutTableViewsiPhone/AboutTableViewsiPhone.html
 [8]: http://developer.apple.com/library/mac/#documentation/General/Conceptual/DevPedia-CocoaCore/ControllerObject.html
-[9]: http://tang3w.com/translate/objc.io/2013/10/21/%E4%BB%8B%E7%BB%8D-objc.io.html
-[10]: http://tang3w.com/translate/objc.io/2013/10/22/%E6%9B%B4%E8%BD%BB%E9%87%8F%E7%9A%84-view-controllers.html
-[11]: http://tang3w.com/translate/objc.io/2013/10/24/%E6%B5%8B%E8%AF%95-view-controllers.html
-[12]: http://tang3w.com/translate/objc.io/2013/10/28/view-controller-%E5%AE%B9%E5%99%A8.html
+[9]: http://tang3w.com/translate/objective-c/2013/10/21/%E4%BB%8B%E7%BB%8D-objc.io.html
+[10]: http://tang3w.com/translate/objective-c/2013/10/22/%E6%9B%B4%E8%BD%BB%E9%87%8F%E7%9A%84-view-controllers.html
+[11]: http://tang3w.com/translate/objective-c/2013/10/24/%E6%B5%8B%E8%AF%95-view-controllers.html
+[12]: http://tang3w.com/translate/objective-c/2013/10/28/view-controller-%E5%AE%B9%E5%99%A8.html
 
 

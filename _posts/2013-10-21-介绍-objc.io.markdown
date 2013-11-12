@@ -44,7 +44,7 @@ Chris，Daniel，和 Florian。
 [7]: https://twitter.com/brentsimmons
 [8]: https://twitter.com/olebegemann
 [9]: mailto:mail@objc.io
-[10]: http://tang3w.com/translate/objc.io/2013/10/22/%E6%9B%B4%E8%BD%BB%E9%87%8F%E7%9A%84-view-controllers.html
-[11]: http://tang3w.com/translate/objc.io/2013/10/23/%E6%95%B4%E7%90%86-table-view-%E7%9A%84%E4%BB%A3%E7%A0%81.html
-[12]: http://tang3w.com/translate/objc.io/2013/10/24/%E6%B5%8B%E8%AF%95-view-controllers.html
-[13]: http://tang3w.com/translate/objc.io/2013/10/28/view-controller-%E5%AE%B9%E5%99%A8.html
+[10]: http://tang3w.com/translate/objective-c/2013/10/22/%E6%9B%B4%E8%BD%BB%E9%87%8F%E7%9A%84-view-controllers.html
+[11]: http://tang3w.com/translate/objective-c/2013/10/23/%E6%95%B4%E7%90%86-table-view-%E7%9A%84%E4%BB%A3%E7%A0%81.html
+[12]: http://tang3w.com/translate/objective-c/2013/10/24/%E6%B5%8B%E8%AF%95-view-controllers.html
+[13]: http://tang3w.com/translate/objective-c/objc.io/2013/10/28/view-controller-%E5%AE%B9%E5%99%A8.html
