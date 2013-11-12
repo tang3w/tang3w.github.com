@@ -26,9 +26,86 @@ Apple 的移动和桌面操作系统为并发编程提供了相同的 APIs。在
 
 [线程][5]是进程的子单元，进程可以被操作系统的调度器单独地调度。实际上，所有并发 APIs 底层都建立在线程上面，Grand Central Dispatch 和 operation queues 都是这样。
 
-多个线程可以在单个 CPU 核心上同时执行（或者至少感觉它们是同时执行的）。操作系统会给每个线程赋予小的运行时间片。如果有多个 CPU 核心可以利用，那么多个线程就可以真正以并行的方式执行，因此减少了完成某个工作的总的时间。
+多个线程可以在单个 CPU 核心上同时执行（或者至少感觉它们是同时执行的）。操作系统会给每个线程赋予小的运行时间片。如果有多个 CPU 核心可以利用，那么多个线程就可以真正以并行的方式执行，因此可以减少完成某个工作的总时间。
 
 你可以使用 Instruments 中的 [CPU strategy view][6] 来了解你的代码或框架代码在多核上调度执行的情况。
+
+你需要牢记的是：你无法控制代码在何时何地调度，也不知道会暂停多久来让其他任务运行。这种线程调度是非常强大的技术。然而，它也带来了巨大的复杂性，随后我们将会看到。
+
+我们先抛开这些复杂性，你可以使用 [POSIX thread][7]，或 Objective-C 包装的 API，`NSThread`，来创建自己的线程。下面这个小例子使用 `pthread` 在 100 万个数字中寻找最大值和最小值。它发起 4 个线程并行运行。很明显，通过这个例子，你应该知道为什么不应该直接使用 `pthread`。
+
+{% highlight objective-c %}
+
+struct threadInfo {
+    uint32_t * inputValues;
+    size_t count;
+};
+
+struct threadResult {
+    uint32_t min;
+    uint32_t max;
+};
+
+void * findMinAndMax(void *arg)
+{
+    struct threadInfo const * const info = (struct threadInfo *) arg;
+    uint32_t min = UINT32_MAX;
+    uint32_t max = 0;
+    for (size_t i = 0; i < info->count; ++i) {
+        uint32_t v = info->inputValues[i];
+        min = MIN(min, v);
+        max = MAX(max, v);
+    }
+    free(arg);
+    struct threadResult * const result = (struct threadResult *) malloc(sizeof(*result));
+    result->min = min;
+    result->max = max;
+    return result;
+}
+
+int main(int argc, const char * argv[])
+{
+    size_t const count = 1000000;
+    uint32_t inputValues[count];
+    
+    // Fill input values with random numbers:
+    for (size_t i = 0; i < count; ++i) {
+        inputValues[i] = arc4random();
+    }
+    
+    // Spawn 4 threads to find the minimum and maximum:
+    size_t const threadCount = 4;
+    pthread_t tid[threadCount];
+    for (size_t i = 0; i < threadCount; ++i) {
+        struct threadInfo * const info = (struct threadInfo *) malloc(sizeof(*info));
+        size_t offset = (count / threadCount) * i;
+        info->inputValues = inputValues + offset;
+        info->count = MIN(count - offset, count / threadCount);
+        int err = pthread_create(tid + i, NULL, &findMinAndMax, info);
+        NSCAssert(err == 0, @"pthread_create() failed: %d", err);
+    }
+    // Wait for the threads to exit:
+    struct threadResult * results[threadCount];
+    for (size_t i = 0; i < threadCount; ++i) {
+        int err = pthread_join(tid[i], (void **) &(results[i]));
+        NSCAssert(err == 0, @"pthread_join() failed: %d", err);
+    }
+    // Find the min and max:
+    uint32_t min = UINT32_MAX;
+    uint32_t max = 0;
+    for (size_t i = 0; i < threadCount; ++i) {
+        min = MIN(min, results[i]->min);
+        max = MAX(max, results[i]->max);
+        free(results[i]);
+        results[i] = NULL;
+    }
+    
+    NSLog(@"min = %u", min);
+    NSLog(@"max = %u", max);
+    return 0;
+}
+
+{% endhighlight %}
 
 <p class="date"><a href="http://twitter.com/floriankugler">Florian Kugler</a>, 2013 年 7 月</p>
 
@@ -40,3 +117,4 @@ Apple 的移动和桌面操作系统为并发编程提供了相同的 APIs。在
 [4]: http://www.objc.io/issue-2/thread-safe-class-design.html
 [5]: http://en.wikipedia.org/wiki/Thread_%28computing%29
 [6]: http://developer.apple.com/library/mac/#documentation/DeveloperTools/Conceptual/InstrumentsUserGuide/AnalysingCPUUsageinYourOSXApp/AnalysingCPUUsageinYourOSXApp.html
+[7]: http://en.wikipedia.org/wiki/POSIX_Threads
