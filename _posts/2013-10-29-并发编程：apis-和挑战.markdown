@@ -107,6 +107,82 @@ int main(int argc, const char * argv[])
 
 {% endhighlight %}
 
+`NSThread` 是 Objective-C 对 pthreads 的简单包装。这让代码在 Cocoa 环境下看起来更熟悉。例如，你可以定义一个线程作为 `NSThread` 的子类，用来封装那些你希望运行在后台的代码。在前面的例子中，你可以定义一个 `NSThread` 子类，就像这样：
+
+{% highlight objective-c %}
+
+@interface FindMinMaxThread : NSThread
+@property (nonatomic) NSUInteger min;
+@property (nonatomic) NSUInteger max;
+- (instancetype)initWithNumbers:(NSArray *)numbers;
+@end
+
+@implementation FindMinMaxThread {
+    NSArray *_numbers;
+}
+
+- (instancetype)initWithNumbers:(NSArray *)numbers
+{
+    self = [super init];
+    if (self) {
+        _numbers = numbers;
+    }
+    return self;
+}
+
+- (void)main
+{
+    NSUInteger min;
+    NSUInteger max;
+    // process the data
+    self.min = min;
+    self.max = max;
+}
+@end
+
+{% endhighlight %}
+
+为了启动线程，你需要创建一个新的线程对象并调用它们的 `start` 方法：
+
+{% highlight objective-c %}
+
+NSSet *threads = [NSMutableSet set];
+NSUInteger numberCount = self.numbers.count;
+NSUInteger threadCount = 4;
+for (NSUInteger i = 0; i < threadCount; i++) {
+    NSUInteger offset = (count / threadCount) * i;
+    NSUInteger count = MIN(numberCount - offset, numberCount / threadCount);
+    NSRange range = NSMakeRange(offset, count);
+    NSArray *subset = [self.numbers subarrayWithRange:range];
+    FindMinMaxThread *thread = [[FindMinMaxThread alloc] initWithNumbers:subset];
+    [threads addObject:thread];
+    [thread start];
+}
+
+{% endhighlight %}
+
+现在，我们可以观察线程的 `isFinished` 属性来检测所有新发起的线程什么时候运行完毕，以计算结果。我们把这个练习留给感兴趣的读者。主要问题在于，直接操作线程，不管是使用 `pthread` 还是 `NSThread` APIs，都是相对来说比较笨重的体验，而且不是很符合编程的心智模式。
+
+直接使用线程会引发的其中一个问题是：如果你的代码和底层框架代码都发起线程，活跃线程的数量将呈指数级增加。实际上，这在大项目中是个常见的问题。例如，如果你创建 8 个线程以利用 8 个 CPU 核心的优势，并且这些线程所调用的框架代码也做了同样的事（因为它不知道你已经创建的线程），结果很快就会导致成百上千的线程。线程不是免费的午餐，每个线程都会占用内存和系统资源。
+
+接下来，我们会讨论两个基于队列的并发 APIs：Grand Central Dispatch 和 operation queues。他们通过集中管理一个[线程池][8]，协作使用每个线程来缓解这个问题。
+
+### Grand Central Dispatch
+
+Grand Central Dispatch (GCD) 在 OS X 10.6 和 iOS 4 中引入，来让开发者更加方便地利用设备中日益增长的 CPU 核心数量的优势。我们将在[关于底层并发 APIs][9] 的文章中更详细地介绍 GCD。
+
+利用 GCD，你再也不用直接操作线程了。取而代之，你只需将代码块加到队列中，GCD 会在背后管理一个[线程池][8]。GCD 决定你的代码块具体在哪个线程上执行，并且它会根据可利用的系统资源来管理这些线程。这就缓解了过多的线程被创建的问题，因为现在线程被集中管理，而不用开发者考虑了。
+
+GCD 带来的另一个重要的改变是：作为开发者，你关心的是队列中的工作项（work items）而不是线程。这个新的心智模式也更容易使用。
+
+GCD 暴露了 5 个不同的队列：运行在主线程上的主队列（main queue），三个拥有不同优先级的后台队列（background queues），以及一个优先级更低、I/O 被限流（throttled）的后台队列。此外，你还可以创建自定义队列，既可以是串行队列，也可以是并发队列。自定义队列又是个强大的抽象，所有你调度到其中的 blocks 最终都会反映到系统的全局队列和它的线程池中。
+
+![GCD queues][10]
+
+使用几个优先级不同的队列看起来很直观，但我们强烈推荐你大多数情况下使用默认优先级的队列。把访问共享资源的任务调度到不同优先级的队列中会很快导致异常行为。这会造成整个程序突然停止，因为一些低优先级的任务会阻塞高优先级的任务。你可以阅读到更多关于这种现象的信息，叫做优先级反转，就在[下面][11]。
+
+虽然 GCD 是一个底层的 C API，但使用起来却非常简单。这容易让你忘掉：即使你将 blocks 调度到 GCD 队列，所有并发编程的警告和陷阱仍然存在。请务必阅读下面的：[并发编程的挑战][12]，来了解潜在的问题。另外，在这个专题里中，我们还有一篇精彩的 [GCD API 漫游][13]，包含了许多深入的解释和有价值的观点。
+
 <p class="date"><a href="http://twitter.com/floriankugler">Florian Kugler</a>, 2013 年 7 月</p>
 
 ------
@@ -118,3 +194,9 @@ int main(int argc, const char * argv[])
 [5]: http://en.wikipedia.org/wiki/Thread_%28computing%29
 [6]: http://developer.apple.com/library/mac/#documentation/DeveloperTools/Conceptual/InstrumentsUserGuide/AnalysingCPUUsageinYourOSXApp/AnalysingCPUUsageinYourOSXApp.html
 [7]: http://en.wikipedia.org/wiki/POSIX_Threads
+[8]: http://en.wikipedia.org/wiki/Thread_pool_pattern
+[9]: http://www.objc.io/issue-2/low-level-concurrency-apis.html
+[10]: http://www.objc.io/images/issue-2/gcd-queues@2x.png
+[11]: #priority-inversion
+[12]: #challenges
+[13]: http://www.objc.io/issue-2/low-level-concurrency-apis.html
