@@ -181,7 +181,88 @@ GCD 暴露了 5 个不同的队列：运行在主线程上的主队列（main qu
 
 使用几个优先级不同的队列看起来很直观，但我们强烈推荐你大多数情况下使用默认优先级的队列。把访问共享资源的任务调度到不同优先级的队列中会很快导致异常行为。这会造成整个程序突然停止，因为一些低优先级的任务会阻塞高优先级的任务。你可以阅读到更多关于这种现象的信息，叫做优先级反转，就在[下面][11]。
 
-虽然 GCD 是一个底层的 C API，但使用起来却非常简单。这容易让你忘掉：即使你将 blocks 调度到 GCD 队列，所有并发编程的警告和陷阱仍然存在。请务必阅读下面的：[并发编程的挑战][12]，来了解潜在的问题。另外，在这个专题里中，我们还有一篇精彩的 [GCD API 漫游][13]，包含了许多深入的解释和有价值的观点。
+虽然 GCD 是一个底层的 C API，但使用起来却非常简单。这容易让你疏忽：即使你将 blocks 调度到 GCD 队列，所有并发编程的警告和陷阱仍然存在。请务必阅读下面的：[并发编程的挑战][12]，来了解潜在的问题。另外，在这个专题里中，我们还有一篇精彩的 [GCD API 走查][13]，包含了许多深入的解释和有价值的观点。
+
+### Operation Queues
+
+Operation queues 是对 GCD 暴露的队列模型的一个 Cocoa 抽象。GCD 提供了更多底层控制，而 operation queues 在它的基础上实现了一些方便的特性，这使它成为应用开发者最好、最安全的选择。
+
+`NSOperationQueue` 类有两个不同类型的队列：主队列和自定义队列。主队列运行在主线程上，自定义队列在后台处理。在任何一种情况下，被这些队列处理的任务都用 `NSOperation` 的子类。
+
+你可以通过两种方式来定义自己的 operations：既可以通过覆写 `main` 方法，也可以通过覆写 `start` 方法。前者做起来非常简单，但是牺牲了灵活性。作为回报，它为你管理了诸如 `isExecuting` 和 `isFinished` 这些状态属性，你只需简单地认为，当 `main` 函数返回时，operation 就结束了。
+
+{% highlight objective-c %}
+
+@implementation YourOperation
+    - (void)main
+    {
+        // do your work here ...
+    }
+@end
+
+{% endhighlight %}
+
+如果你想要更多的控制，并且可能要在 operation 中执行一个异步任务的话，你可以覆写 `start` 方法：
+
+{% highlight objective-c %}
+
+@implementation YourOperation
+    - (void)start
+    {
+        self.isExecuting = YES;
+        self.isFinished = NO;
+        // start your work, which calls finished once it's done ...
+    }
+
+    - (void)finished
+    {
+        self.isExecuting = NO;
+        self.isFinished = YES;
+    }
+@end
+
+{% endhighlight %}
+
+注意，在这种情况下，你必须手动管理 operation 的状态。为了使一个 operation queue 能捕捉到这些状态的改变，你必须以 KVO 兼容的方式实现这些状态属性。如果你不通过默认的访问器方法来设置状态，请确保发送合适的 KVO 消息。
+
+为了利用 operation queues 暴露出来的取消执行的特性，你应该为长时间运行的 operations 定期检查 `isCancelled` 属性。
+
+{% highlight objective-c %}
+
+- (void)main
+{
+    while (notDone && !self.isCancelled) {
+        // do your processing
+    }
+}
+
+{% endhighlight %}
+
+一旦你定义了你的 operation 类，就可以很方便地将一个 operation 添加到一个队列中。
+
+{% highlight objective-c %}
+
+NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+YourOperation *operation = [[YourOperation alloc] init];
+[queue  addOperation:operation];
+
+{% endhighlight %}
+
+另外，你也可以将 blocks 添加到 operation queues 中。这非常方便，比如：如果你想将一次性的任务调度到主队列上：
+
+{% highlight objective-c %}
+
+[[NSOperationQueue mainQueue] addOperationWithBlock:^{
+    // do something...
+}];
+
+{% endhighlight %}
+
+虽然以这种方式来调度任务到队列中很方便，但定义你自己的 `NSOperation` 子类会在调试的时候非常有用。如果你覆写 operation 的 `description` 方法，你就可以容易地判断某个队列中正在调度的所有 operations。
+
+除了基本的调度 operations 或 blocks 之外，operation queues 还提供了一些对 GCD 来说不平凡的特性。比如，你可以用 `maxConcurrentOperationCount` 属性来方便地控制某个队列可以并发执行多少个 operations。将它设置为 1 就成了串行队列了，这对独立任务来说非常好。
+
+
 
 <p class="date"><a href="http://twitter.com/floriankugler">Florian Kugler</a>, 2013 年 7 月</p>
 
