@@ -260,7 +260,25 @@ YourOperation *operation = [[YourOperation alloc] init];
 
 虽然以这种方式来调度任务到队列中很方便，但定义你自己的 `NSOperation` 子类会在调试的时候非常有用。如果你覆写 operation 的 `description` 方法，你就可以容易地判断某个队列中正在调度的所有 operations。
 
-除了基本的调度 operations 或 blocks 之外，operation queues 还提供了一些对 GCD 来说不平凡的特性。比如，你可以用 `maxConcurrentOperationCount` 属性来方便地控制某个队列可以并发执行多少个 operations。将它设置为 1 就成了串行队列了，这对独立任务来说非常好。
+除了基本的调度 operations 或 blocks 之外，operation queues 还提供了一些对 GCD 来说不平凡的特性。比如，你可以用 `maxConcurrentOperationCount` 属性来方便地控制某个队列可以并发执行多少个 operations。将它设置为 1 就成了串行队列了，这对独立任务来说非常有用。
+
+另一个方便的特性是：可以根据 operations 的优先级对一个队列中的所有 operations 进行排序。这与 GCD 的队列优先级不同，它只影响某个队列所调度的 operations 的执行顺序。如果你想对执行顺序进行除 5 个标准优先级之外的更多控制，你可以像这样指定 operations 之间的依赖：
+
+{% highlight objective-c %}
+
+[intermediateOperation addDependency:operation1];
+[intermediateOperation addDependency:operation2];
+[finishedOperation addDependency:intermediateOperation];
+
+{% endhighlight %}
+
+以上简单的代码保证了 `operation1` 和 `operation2` 将在 `intermediateOperation` 之前执行，而 `intermediateOperation` 将在 `finishedOperation` 之前执行。Operation dependencies 是一个用来指定执行顺序的强大机制。它能让你创建 operation groups，以保证在依赖它的 operation 之前执行，或者在一个并发队列中串行化 operations。
+
+通过非常自然的抽象，operation queues 也带来了一些相对于使用 GCD API 的小的性能问题。然而，大多数情况下，这种影响是微不足道的，并且 operation queues 是合适的选择。
+
+### Run Loops
+
+Run loops 从技术上来说，不是像 GCD 或 operation queues 那样的并发机制，因为他们不能并行地执行任务。但是，run loops 和在 main dispatch/operation queue 上执行任务有直接联系，并且他们提供了异步执行代码的机制。
 
 
 
