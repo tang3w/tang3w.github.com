@@ -22,7 +22,10 @@
 		<div id="wrapper">
             <a href="/"><img id="home" alt="Home" src="/home.png" /></a>
 			<div id="content">
-                {{ content }}
+                <h2 class="title">{{ page.title }}</h2>
+                <div class="cnt">
+                    {{ content | markdownify }}
+                </div>
 			</div>
 		</div>
 	</body>

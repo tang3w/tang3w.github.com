@@ -473,3 +473,12 @@ div#content ol li {
 body#profile {
     font-family: arial, sans-serif;
 }
+
+body#profile h2,
+body#profile h3 {
+    font-weight: normal;
+}
+
+body#profile h3 {
+    background: #ecf0f1;
+}
