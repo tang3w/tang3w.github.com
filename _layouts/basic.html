@@ -27,6 +27,10 @@
                 <div class="cnt">
                     {{ content | markdownify }}
                 </div>
+
+                {% if page.comments == true %}
+                {% include comments.html %}
+                {% endif %}
 			</div>
 		</div>
 	</body>
