@@ -1,0 +1,9 @@
+---
+layout: post
+title: "在 Debian 6 上搭建 L2TP 服务"
+published: false
+categories:
+- notes
+---
+
+最近由于网络问题，买了一个 VPS 来搭建 VPN。使用了 Debian 6.0.5 x86 来作为操作系统，据说很稳定。于是把搭建过程记下来，分享给大家。
