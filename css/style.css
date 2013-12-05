@@ -469,3 +469,9 @@ div#content ol li {
     top: 0;
     left: 8px;
 }
+
+iframe {
+	display: block;
+	position: relative;
+	margin: 20px;
+}
