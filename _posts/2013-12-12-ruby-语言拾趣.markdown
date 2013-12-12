@@ -11,5 +11,8 @@ categories:
 ### 源文件编码
 从 Ruby 2.0 开始，默认的源文件编码是 UTF-8（[见此处][1]）。而在之前的版本中，默认编码是 ASCII。Ruby 1.9 开始支持[魔法注释][2]，如果文件中使用了非 ASCII 字符，必须通过魔法注释来指定文件的编码。Ruby 1.8 对编码不敏感，字符串只是纯粹的字节流，所以不编码也没有关系。
 
+### 源代码布局
+Ruby 是面向行的（line-oriented）语言，这意味着表达式和语句在行末结束。
+
 [1]: https://bugs.ruby-lang.org/issues/6679
 [2]: http://en.wikibooks.org/wiki/Ruby_Programming/Encoding#Using_Encodings
