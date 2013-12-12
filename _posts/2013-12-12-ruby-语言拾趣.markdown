@@ -1,0 +1,15 @@
+---
+layout: post
+title: "Ruby 语言拾趣"
+published: false
+categories:
+- Ruby
+---
+
+本文是我学习 Ruby 语言过程中的笔记，记录了 Ruby 语言中那些基础但又重要的概念。讨论的版本为 Ruby 2，但由于某些特性和旧版本存在不兼容的情况，会说明各版本之间的差异。
+
+### 源文件编码
+从 Ruby 2.0 开始，默认的源文件编码是 UTF-8（[见此处][1]）。而在之前的版本中，默认编码是 ASCII。Ruby 1.9 开始支持[魔法注释][2]，如果文件中使用了非 ASCII 字符，必须通过魔法注释来指定文件的编码。Ruby 1.8 对编码不敏感，字符串只是纯粹的字节流，所以不编码也没有关系。
+
+[1]: https://bugs.ruby-lang.org/issues/6679
+[2]: http://en.wikibooks.org/wiki/Ruby_Programming/Encoding#Using_Encodings
