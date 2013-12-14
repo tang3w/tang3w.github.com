@@ -8,11 +8,31 @@ categories:
 
 本文是我学习 Ruby 语言过程中的笔记，记录了 Ruby 语言中那些基础但又重要的概念。讨论的版本为 Ruby 2，但由于某些特性和旧版本存在不兼容的情况，会说明各版本之间的差异。
 
-### 源文件编码
+### 编码
 从 Ruby 2.0 开始，默认的源文件编码是 UTF-8（[见此处][1]）。而在之前的版本中，默认编码是 ASCII。Ruby 1.9 开始支持[魔法注释][2]，如果文件中使用了非 ASCII 字符，必须通过魔法注释来指定文件的编码。Ruby 1.8 对编码不敏感，字符串只是纯粹的字节流，所以不编码也没有关系。
 
-### 源代码布局
-Ruby 是面向行的（line-oriented）语言，这意味着表达式和语句在行末结束。
+### 代码布局
+Ruby 是[面向行的][3]（line-oriented）语言。当解析器遇到行末时，如果能判断语句是完整的，就结束语句，否则延续到下一行继续解析，比如一行的最后一个 [token][4] 是运算符或逗号。可以用分号结束语句，还可以用位于行末的反斜线延续到下一行。
+
+单行注释以井号开始，一直延伸到物理行的末尾。多行注释以 `=begin` 打头的行开始，以 `=end` 打头的行来结束。如果 Ruby 遇到只包含 `__END__` 的一行，就会结束该程序文件。`__END__` 之后的行不会执行，但可以通过 `DATA` 对象来访问这些行。
+
+此外，Ruby 还允许指定文件加载时执行的块（`BEGIN` blocks）和程序结束后执行的块（`END` blocks）。一个程序可以包含多个 `BEGIN` 和 `END` blocks，`BEGIN` blocks 以声明的顺序执行，`END` blocks 以相反的顺序执行。
+
+### 通用定界语法
+Ruby 提供了通用定界语法来表示各种字面量。这种语法以百分号开头，紧跟着一个字符来指定字面量的类型。例如 `%q` 和 `%Q` 表示字符串类型，`%w` 和 `%W` 表示字符串数组类型，`%i` 和 `%I` 表示符号数组类型（Ruby 2.0 可用），`%r` 表示正则表达式类型，等等。
+
+类型字符后面紧接着定界符，定界符可以是任何非字母数字或非多字节字符。如果定界符是 `(`, `[`, `{` 和 `<` 这四个字符之一，字面量会在匹配的关闭定界符处结束，其中可包含嵌套的定界符对。对于其他定界符，字面量以下一个定界符结束。
+
+对于多行字符串，换行符和后续每一行开头的空白都会包含在这个字符串里面。
+
+### 基本类型
+Ruby 中，整数不是 `Fixnum` 就是 `Bignum`。如果一个整数可以用比机器的字长少 1 的位来表示，就用 `Fixnum` 类表示；如果超出这个范围，就用 `Bignum` 类来表示。
+
+Ruby 解释器内建了有理数（[Rational][5]）和复数（[Complex][6]）的类，但没有字面量来表示它们，Ruby 没有为这些数值类型提供语言层面上的支持。
 
 [1]: https://bugs.ruby-lang.org/issues/6679
 [2]: http://en.wikibooks.org/wiki/Ruby_Programming/Encoding#Using_Encodings
+[3]: http://en.wikipedia.org/wiki/Line-oriented_programming_language
+[4]: http://en.wikipedia.org/wiki/Token_(parser)#Token
+[5]: http://www.ruby-doc.org/core-2.0.0/Rational.html
+[6]: http://www.ruby-doc.org/core-2.0.0/Complex.html
