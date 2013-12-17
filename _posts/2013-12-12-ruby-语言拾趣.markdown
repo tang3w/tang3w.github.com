@@ -49,6 +49,9 @@ Ruby 是弱类型语言，变量的类型仅取决于它引用的对象所能响
 ### 查找常量
 首先，Ruby 会依次在 `Module.nesting` 返回的模块中查找，如果没有找到，则继续在 `Module.nesting.first.ancestors` 中查找，如果 `Module.nesting.first` 是 `nil` 或模块，则在 `Object.ancestors` 中进一步查找。请参考[此文][10]。
 
+### 类变量
+在 Ruby 中，子类会共享父类中的类变量，并且父类中的类变量将覆盖子类中同名的类变量。总的来说，Ruby 查找类变量的逻辑是：逐一遍历祖先链，然后取最上游的类变量。除此之外，类变量还有许多出乎意料的地方，并且在不同版本中行为不一致。因此，很多人建议不使用它。
+
 [1]: https://bugs.ruby-lang.org/issues/6679
 [2]: http://en.wikibooks.org/wiki/Ruby_Programming/Encoding#Using_Encodings
 [3]: http://en.wikipedia.org/wiki/Line-oriented_programming_language
