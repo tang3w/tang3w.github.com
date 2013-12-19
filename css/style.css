@@ -246,9 +246,11 @@ hr {
 	margin: 0 -20px;
 }
 code, pre {
-	font-family:Menlo,monospace,"Courier New";
-	font-size:14px;
-	line-height:150%;
+	line-height:120%;
+	font-family:Consolas, Menlo, Monaco, Lucida Console, Bitstream Vera Sans Mono, monospace, serif;
+	background-color: #eeeeee;
+	padding: 1px 5px 1px 5px;
+	border-radius: 3px;
 }
 
 div.notice {

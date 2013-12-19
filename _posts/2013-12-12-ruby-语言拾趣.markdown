@@ -52,8 +52,13 @@ Ruby 是弱类型语言，变量的类型仅取决于它引用的对象所能响
 ### 类变量
 在 Ruby 中，子类会共享父类中的类变量，并且父类中的类变量将覆盖子类中同名的类变量。总的来说，Ruby 查找类变量的逻辑是：逐一遍历祖先链，然后取最上游的类变量。除此之外，类变量还有许多出乎意料的地方，并且在不同版本中行为不一致。因此，很多人建议不使用它。
 
-### 局部变量
-局部变量直到它的首个赋值语句执行时才动态地创建（初始化），但它的作用域却由解析器静态地根据块、方法定义、类定义、模块定义以及文件来决定。方法和块的参数是该方法的局部变量；块参数列表中，位于分号后面的变量也是块的局部变量。
+### 作用域
+类定义、模块定义和方法定义会暂时离开先前的作用域，并打开一个新的作用域，边界由关键字 `class`, `module` 和 `def` 来确定。Ruby 查找变量时，不会越过这些作用域，也不会形成作用域链。因此，这些关键字充当了[作用域门][11]（Scope Gate）的角色。块也会创建新的作用域，但块的作用域不是封闭的，你可以在块中访问外部变量，利用块的这些特性，可以构建[扁平化作用域][12]。
+
+另外，`while`, `until` 和 `for` 循环不会创建新的作用域，循环体可以访问外部的变量，在循环体中创建的变量也可以在
+
+### 块
+块会保留它们被创建的作用域中已存在的局部变量，并且成为它们绑定的一部分。块会和该作用域共享这些变量，除非你显式将这些变量声明为块的局部变量（Ruby 1.9 支持，方法是在块参数列表的分号后指定）。在其他语言中，把这种特性称为[闭包][13]（Closure）。
 
 [1]: https://bugs.ruby-lang.org/issues/6679
 [2]: http://en.wikibooks.org/wiki/Ruby_Programming/Encoding#Using_Encodings
@@ -65,3 +70,6 @@ Ruby 是弱类型语言，变量的类型仅取决于它引用的对象所能响
 [8]: http://en.wikipedia.org/wiki/Duck_typing
 [9]: http://cirw.in/blog/constant-lookup
 [10]: http://cirw.in/blog/constant-lookup
+[11]: http://hopsoft.github.io/blog/ruby-metaprogramming-idioms/#scope_gate
+[12]: http://hopsoft.github.io/blog/ruby-metaprogramming-idioms/#flat_scope
+[13]: http://en.wikipedia.org/wiki/Closure_(computer_programming)
