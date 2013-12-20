@@ -250,7 +250,13 @@ code, pre {
 	font-family:Consolas, Menlo, Monaco, Lucida Console, Bitstream Vera Sans Mono, monospace, serif;
 	background-color: #eeeeee;
 	padding: 1px 5px 1px 5px;
-	border-radius: 3px;
+}
+
+code {
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	-khtml-border-radius: 5px;
 }
 
 div.notice {
