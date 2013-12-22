@@ -63,6 +63,17 @@ Ruby 是弱类型语言，变量的类型仅取决于它引用的对象所能响
 ### 预定义变量
 Ruby 预定义了许多变量，用来处理异常、模式匹配、输入输出、环境变量，等等。许多变量以美元符号 `$` 开头，这受到了 Perl 语言的影响。此外，还有标准对象，比如 `nil`, `self`, `ARGV` 等；以及全局常量，比如 `DATA`, `FALSE`, `NIL` 等。
 
+### 并行赋值
+Ruby 支持[并行赋值][14]（Parallel Assignment），即在一个赋值表达式中，可能有一个或多个[左值和右值][15]。并行赋值遵循以下规则：
+
+1. 如果左值前缀星号，将包含尽可能多的右值；如果右值前缀星号，则试图展开。
+2. 如果只有一个左值，但有多个右值，右值将转换成数组赋给左值；如果有多个左值，但只有一个右值，右值将试图展开。展开的规则是，如果实现了 `to_a`，则展开 `to_a` 返回的元素。
+3. 如果左值比右值多，其余的左值会赋为 nil；如果右值比左值多，其余的右值将被忽略。
+4. 如果左值包含一个括号列表，则作为嵌套的赋值表达式来对待。
+
+
+
+
 [1]: https://bugs.ruby-lang.org/issues/6679
 [2]: http://en.wikibooks.org/wiki/Ruby_Programming/Encoding#Using_Encodings
 [3]: http://en.wikipedia.org/wiki/Line-oriented_programming_language
@@ -76,3 +87,5 @@ Ruby 预定义了许多变量，用来处理异常、模式匹配、输入输出
 [11]: http://hopsoft.github.io/blog/ruby-metaprogramming-idioms/#scope_gate
 [12]: http://hopsoft.github.io/blog/ruby-metaprogramming-idioms/#flat_scope
 [13]: http://en.wikipedia.org/wiki/Closure_(computer_programming)
+[14]: http://en.wikipedia.org/wiki/Assignment_(computer_science)#Parallel_assignment
+[15]: http://en.wikipedia.org/wiki/Value_(computer_science)#Assignment:_l-values_and_r-values

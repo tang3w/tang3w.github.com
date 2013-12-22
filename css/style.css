@@ -107,7 +107,7 @@ div#content ul li {
 }
 
 div#content .cnt li {
-	margin:5px;
+	margin: 5px 0 5px 35px;
 }
 div#header {
 	font-size:13px;
@@ -468,7 +468,7 @@ h2.title {
 }
 
 div#content ol li {
-    list-style-position: inside;
+    list-style-position: outside;
 }
 
 #wrapper img#home {
