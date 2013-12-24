@@ -66,13 +66,19 @@ Ruby 预定义了许多变量，用来处理异常、模式匹配、输入输出
 ### 并行赋值
 Ruby 支持[并行赋值][14]（Parallel Assignment），即在一个赋值表达式中，可能有一个或多个[左值和右值][15]。并行赋值遵循以下规则：
 
-1. 如果左值前缀星号，将包含尽可能多的右值；如果右值前缀星号，则试图展开。
-2. 如果只有一个左值，但有多个右值，右值将转换成数组赋给左值；如果有多个左值，但只有一个右值，右值将试图展开。展开的规则是，如果实现了 `to_a`，则展开 `to_a` 返回的元素。
-3. 如果左值比右值多，其余的左值会赋为 nil；如果右值比左值多，其余的右值将被忽略。
-4. 如果左值包含一个括号列表，则作为嵌套的赋值表达式来对待。
+1. 如果左值前缀星号，则包含尽可能多的右值；如果右值前缀星号，则试图展开。
+2. 右值展开的规则是：如果它实现了 `to_a` 方法，则展开 `to_a` 返回的元素，否则不展开。
+3. 如果只有一个左值，多个右值，右值将转换成数组赋给左值；如果有多个左值，但只有一个右值，右值将按照规则 2 进行展开。
+4. 如果左值比右值多，其余的左值会赋为 nil；如果右值比左值多，其余的右值将被忽略。
+5. 如果左值包含一个括号列表，则作为嵌套的赋值表达式来对待。
 
+并行赋值表达式的值是右值所组成的数组。
 
+### 布尔值
+在 Ruby 中，除了预定义常量 `false` 和 `nil` 是假值之外，其余的值都作为真值来对待。Ruby 会对逻辑表达式进行[短路求值][16]，即：如果通过第一个表达式就可以确定逻辑表达式的真假，就返回它的值，不会再对第二个表达式进行求值，否则返回第二个表达式的值。
 
+### 触发器
+Ruby 的触发器（Flip-flop）鲜为人知，该特性是从 Perl 沿袭过来的。
 
 [1]: https://bugs.ruby-lang.org/issues/6679
 [2]: http://en.wikibooks.org/wiki/Ruby_Programming/Encoding#Using_Encodings
@@ -89,3 +95,4 @@ Ruby 支持[并行赋值][14]（Parallel Assignment），即在一个赋值表�
 [13]: http://en.wikipedia.org/wiki/Closure_(computer_programming)
 [14]: http://en.wikipedia.org/wiki/Assignment_(computer_science)#Parallel_assignment
 [15]: http://en.wikipedia.org/wiki/Value_(computer_science)#Assignment:_l-values_and_r-values
+[16]: http://en.wikipedia.org/wiki/Short-circuit_evaluation
