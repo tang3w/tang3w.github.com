@@ -78,7 +78,11 @@ Ruby 支持[并行赋值][14]（Parallel Assignment），即在一个赋值表�
 在 Ruby 中，除了预定义常量 `false` 和 `nil` 是假值之外，其余的值都作为真值来对待。Ruby 会对逻辑表达式进行[短路求值][16]，即：如果通过第一个表达式就可以确定逻辑表达式的真假，就返回它的值，不会再对第二个表达式进行求值，否则返回第二个表达式的值。
 
 ### 触发器
-Ruby 的触发器（Flip-flop）鲜为人知，该特性是从 Perl 沿袭过来的。
+Ruby 的触发器（Flip-flop）鲜为人知，该特性是从 Perl 沿袭过来的。触发器复用了范围字面量的语法。当范围的任何一个边界不是整数字面量，并且作为一个条件来使用时，它就是 flip-flop。触发器每次计算都返回一个布尔值，并保留本次计算的状态，该状态会决定下次该如何计算。触发器有两种状态，set 和 unset，初始状态为 unset。触发器有两种形式：`a..b` 和 `a...b`。它们的计算规则稍有差异。`a..b` 形式的计算规则如下：
+
+1. 如果状态为 unset，则计算表达式 `a`，否则计算表达式 `b`。
+2. 如果表达式 `a` 计算为 `true`，则进一步计算表达式 `b`，否则返回 `false`。
+3. 如果表达式 `b` 计算为 `true`，并把状态设置为 unset，否则把状态设置为 set。返回 `true`。
 
 [1]: https://bugs.ruby-lang.org/issues/6679
 [2]: http://en.wikibooks.org/wiki/Ruby_Programming/Encoding#Using_Encodings
