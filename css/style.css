@@ -246,14 +246,16 @@ hr {
 	margin: 0 -20px;
 }
 code, pre {
-	line-height:120%;
-	font-family:Consolas, Menlo, Monaco, Lucida Console, Bitstream Vera Sans Mono, monospace, serif;
+	line-height: 120%;
+	font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
 	background-color: #eeeeee;
 	padding: 1px 5px 1px 5px;
 }
 
 code {
+	font-size: 14px;
 	border-radius: 5px;
+	border: 1px solid #dedede;
 	-webkit-border-radius: 5px;
 	-moz-border-radius: 5px;
 	-khtml-border-radius: 5px;
