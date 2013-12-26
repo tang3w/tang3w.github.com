@@ -91,15 +91,27 @@ Ruby 的触发器（Flip-flop）鲜为人知，该特性是从 Perl 沿袭过来
 
 触发器就是一个简单的[有限状态机][17]，每次计算都会在两个边界之间转移，以决定下一次计算的起点。当从 `a` 转移到 `b` 后，要直到 `b` 为真时才转移到 `a`，否则一直维持 in 状态并返回 `true`。两种触发器之间的差异也只体现在：当 `a` 和 `b` 都为真时，`a..b` 会计算 `b` 并转移到 `a`；而 `a...b` 不会计算 `b`，并停留在 `b`。
 
-### 控制语句
+### 条件选择
 
 Ruby 提供了三种选择控制语句： `if`, `unless` 和 `case` 语句。
 
-`if` 有可选的 `elsif` 和 `else` 分支。`unless` 的语义和 `if` 相反，但只支持可选的 `else` 分支。其次，`if` 和 `unless` 还可以作为语句修饰来使用。
+`if` 语句有可选的 `elsif` 和 `else` 分支。`unless` 语句的逻辑和 `if` 相反，但只支持可选的 `else` 分支。其次，`if` 和 `unless` 还可以作为语句修饰来使用。条件表达式和 body 可用关键字 `then` 分隔，如果 body 从新行开始，则可以省略。
 
-`case` 语句有两种形式，根据 `case` 关键字后面有没有表达式来区分。如果有；如果没有，则退化成 `if` 语句。
+`case` 语句和其他语言中的 `switch` 语句类似，但有些显著的差别。`case` 语句的每个 `when` 分支执行完后都会自动跳出，而不需要像 C 语言的 `switch` 那样必须显式地用 `break` 语句跳出。
+
+`case` 语句的 `when` 分支可以测试多个表达式，用逗号隔开，表达式可以是数组的展开形式，数组会在该 `when` 分支测试之前展开，就像方法的参数列表那样处理。测试时，会依次对这个列表进行测试，直到为真时停止。
+
+`case` 语句有两种形式：如果 `case` 后面没有表达式，那么每个 `when` 分支的表达式都当做布尔值来测试；如果 `case` 后面有表达式，则会对 `when` 分支上的表达式调用 `===()` 方法，并以 `case` 后面的表达式的值为参数，来测试相等性。作为优化，官方实现在 Ruby 1.9 之后，对字符串字面量之间和数字之间的比较不使用 `===`。
 
 选择控制语句和表达式一样也有值，它们的值等于最后执行的语句的值，如果一条语句都没有执行，其值就为 `nil`。
+
+最后，和大多数语言一样，Ruby 也提供了[三元运算符][18]。例如 `a ? b : c`。
+
+### 循环
+
+Ruby 提供了三种循环语句：`while`, `until` 和 `for` 语句。
+
+
 
 [1]: https://bugs.ruby-lang.org/issues/6679
 [2]: http://en.wikibooks.org/wiki/Ruby_Programming/Encoding#Using_Encodings
@@ -118,3 +130,4 @@ Ruby 提供了三种选择控制语句： `if`, `unless` 和 `case` 语句。
 [15]: http://en.wikipedia.org/wiki/Value_(computer_science)#Assignment:_l-values_and_r-values
 [16]: http://en.wikipedia.org/wiki/Short-circuit_evaluation
 [17]: http://en.wikipedia.org/wiki/Finite-state_machine
+[18]: http://en.wikipedia.org/wiki/%3F:
