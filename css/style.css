@@ -225,6 +225,7 @@ div#content li ul li {
 	font-size:25px;
 	margin:20px -20px;
 	padding:10px 20px;
+	color: #3F3F3F;
 }
 h4 {
 	font-size:20px;
@@ -252,7 +253,16 @@ code, pre {
 	padding: 1px 5px 1px 5px;
 }
 
-code {
+pre code { /* block code */
+	line-height: 150%;
+	border-radius: 0;
+	border: none;
+	-webkit-border-radius: 0;
+	-moz-border-radius: 0;
+	-khtml-border-radius: 0;
+}
+
+code { /* inner code */
 	font-size: 14px;
 	border-radius: 5px;
 	border: 1px solid #dedede;
@@ -487,4 +497,8 @@ div.vedio {
 
 #basic div#content .cnt li {
 	margin: 5px 0;
+}
+
+#basic .cnt h3 {
+	color: black;
 }

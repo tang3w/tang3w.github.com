@@ -93,7 +93,13 @@ Ruby 的触发器（Flip-flop）鲜为人知，该特性是从 Perl 沿袭过来
 
 ### 控制语句
 
+Ruby 提供了三种选择控制语句： `if`, `unless` 和 `case` 语句。
 
+`if` 有可选的 `elsif` 和 `else` 分支。`unless` 的语义和 `if` 相反，但只支持可选的 `else` 分支。其次，`if` 和 `unless` 还可以作为语句修饰来使用。
+
+`case` 语句有两种形式，根据 `case` 关键字后面有没有表达式来区分。如果有；如果没有，则退化成 `if` 语句。
+
+选择控制语句和表达式一样也有值，它们的值等于最后执行的语句的值，如果一条语句都没有执行，其值就为 `nil`。
 
 [1]: https://bugs.ruby-lang.org/issues/6679
 [2]: http://en.wikibooks.org/wiki/Ruby_Programming/Encoding#Using_Encodings
