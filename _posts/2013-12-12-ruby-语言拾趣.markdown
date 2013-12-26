@@ -89,6 +89,11 @@ Ruby 的触发器（Flip-flop）鲜为人知，该特性是从 Perl 沿袭过来
 
 `a...b` 的处理规则和 `a..b` 类似，不同的是：当 `a` 为真时，不会进一步计算 `b`，而是直接将状态设置为 in 并返回 `true`。
 
+触发器就是一个简单的[有限状态机][17]，每次计算都会在两个边界之间转移，以决定下一次计算的起点。当从 `a` 转移到 `b` 后，要直到 `b` 为真时才转移到 `a`，否则一直维持 in 状态并返回 `true`。两种触发器之间的差异也只体现在：当 `a` 和 `b` 都为真时，`a..b` 会计算 `b` 并转移到 `a`；而 `a...b` 不会计算 `b`，并停留在 `b`。
+
+### 控制语句
+
+
 
 [1]: https://bugs.ruby-lang.org/issues/6679
 [2]: http://en.wikibooks.org/wiki/Ruby_Programming/Encoding#Using_Encodings
@@ -106,3 +111,4 @@ Ruby 的触发器（Flip-flop）鲜为人知，该特性是从 Perl 沿袭过来
 [14]: http://en.wikipedia.org/wiki/Assignment_(computer_science)#Parallel_assignment
 [15]: http://en.wikipedia.org/wiki/Value_(computer_science)#Assignment:_l-values_and_r-values
 [16]: http://en.wikipedia.org/wiki/Short-circuit_evaluation
+[17]: http://en.wikipedia.org/wiki/Finite-state_machine
