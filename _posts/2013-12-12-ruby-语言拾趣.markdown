@@ -115,11 +115,13 @@ Ruby 提供了三种循环语句：`while`, `until` 和 `for` 语句。
 
 测试条件和 body 可以用关键字 `do`分隔，和选择控制语句一样，如果 body 另起一行开始，则可以省略。值得注意的是，虽然这里的 `do` 和 `end` 看起来像一个 block，但它不是，它不会引入新的作用域。循环体中定义的局部变量可以在外面访问。
 
-另外，与 `if` 和 `unless` 一样，`while` 和 `until` 也可以作为语句修饰来使用。
+另外，与 `if` 和 `unless` 一样，`while` 和 `until` 也可以作为语句修饰来使用。当 `while` 修饰的是 `begin/end` 块时，块至少会执行一次，就像 C 语言的 `do/while` 语句那样。
 
 Ruby 还提供了几个关键字来进一步控制循环：`break`, `next` 和 `redo`。`break` 会立即跳出当前循环；`next` 会跳到循环的末尾，并开始下一次迭代；`redo` 和 `next` 相反，它会跳到循环的开始，重新迭代一遍，但它不会重新计算测试条件。
 
 `break` 后面可以附带一个或多个参数。如果 `while`, `until` 和 `for` 循环调用了有参数的 `break` 语句，它们的值等于 `break` 附带的参数；否则，则它们的值为 `nil`。
+
+### 方法定义
 
 [1]: https://bugs.ruby-lang.org/issues/6679
 [2]: http://en.wikibooks.org/wiki/Ruby_Programming/Encoding#Using_Encodings
