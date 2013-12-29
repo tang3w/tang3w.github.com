@@ -127,6 +127,20 @@ Ruby 还提供了几个关键字来进一步控制循环：`break`, `next` 和 `
 
 `def` 除了可以定义实例方法外，还可以通过 `def expr.methodname` 的形式定义单例方法。如果实例方法定义在最外层（即任何 class 或 module 定义块之外），此时，该实例方法将作为 `Object` 类的私有实例方法，因此可以在任何地方隐式地调用它。
 
+另外，方法块就像 `begin/end` 块，也可以包含异常控制语句，比如 `rescue`, `else` 和 `ensure`。
+
+### 参数
+
+Ruby 能让你灵活地控制参数，形式参数（方法定义的参数）有以下几种类型：
+
+1. 零个或多个常规参数，和局部变量的命名一样。你还可以为它赋值来设置默认值。
+2. 零个或多个关键字参数（Ruby 2.0 支持），其形式为：`name:default_value`。
+3. 可选的 splat 参数，它收集多余的参数，并放到一个数组里面。
+4. 可选的 double splat 参数，它收集未在参数列表中定义的关键字参数，并放到一个哈希表中。
+5. 可选的 block 参数，只能放在参数列表最后。
+
+如果参数（常规参数和关键字参数）提供了默认值，其值将在方法被调用时计算，并且可以引用在它之前的参数。
+
 [1]: https://bugs.ruby-lang.org/issues/6679
 [2]: http://en.wikibooks.org/wiki/Ruby_Programming/Encoding#Using_Encodings
 [3]: http://en.wikipedia.org/wiki/Line-oriented_programming_language
