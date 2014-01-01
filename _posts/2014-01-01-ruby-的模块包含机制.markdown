@@ -1,0 +1,10 @@
+---
+layout: post
+title: "Ruby 的模块包含机制"
+published: false
+categories:
+- ruby
+---
+
+在 Ruby 中，模块可以被其他模块（类也是模块）包含，这一特性也叫做 Mixins。
+
