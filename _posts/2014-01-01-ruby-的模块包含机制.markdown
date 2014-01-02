@@ -6,4 +6,24 @@ categories:
 - ruby
 ---
 
-在 Ruby 中，模块可以被其他模块包含（这里，其他模块也包括类，因为类也是模块）。本文解释了当一个模块被包含时，Ruby 都做了哪些实际的工作。
+在 Ruby 中，模块可以被其他模块包含（这里，其他模块也包括类，因为类也是模块）。通过包含模块，可以构建出复杂的类层次结构。本文解释了当包含一个模块时，Ruby 内部都做了哪些实际的工作。
+
+下面这段 Ruby 代码创建了 `A`, `B`, `C` 三个模块，`C` 包含 `A` 和 `B`。
+
+{% highlight ruby %}
+
+A = Module.new
+
+B = Module.new
+
+module C
+  include A, B    # Inclusion is done by this line
+end
+
+{% endhighlight %}
+
+在模块 `C` 中，语句 `include A, B` 完成了模块包含的工作，该语句以 `A`, `B` 两个模块为作为参数，调用了模块 `C` 的 `include` 方法。一切都那么自然。
+
+现在，把注意力放在 `include` 方法上，它的默认实现是 `Module#include`。根据 [API 文档][1]，__，其对应的 C 函数是 `rb_mod_include`。
+
+[1]: http://www.ruby-doc.org/core-2.1.0/Module.html#include-method
