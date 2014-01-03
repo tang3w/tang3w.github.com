@@ -24,6 +24,141 @@ end
 
 在模块 `C` 中，语句 `include A, B` 完成了模块包含的工作，该语句以 `A`, `B` 两个模块为作为参数，调用了模块 `C` 的 `include` 方法。一切都那么自然。
 
-现在，把注意力放在 `include` 方法上，它的默认实现是 `Module#include`。根据 [API 文档][1]，__，其对应的 C 函数是 `rb_mod_include`。
+现在，把注意力放在 `include` 方法上，它的默认实现是 `Module#include`。其对应的 C 函数是 `rb_mod_include`。
+
+{% highlight cpp %}
+
+static VALUE
+rb_mod_include(int argc, VALUE *argv, VALUE module)
+{
+    int i;
+    ID id_append_features, id_included;
+
+    CONST_ID(id_append_features, "append_features");
+    CONST_ID(id_included, "included");
+
+    for (i = 0; i < argc; i++)
+        Check_Type(argv[i], T_MODULE);
+    while (argc--) {
+        rb_funcall(argv[argc], id_append_features, 1, module);
+        rb_funcall(argv[argc], id_included, 1, module);
+    }
+    return module;
+}
+
+{% endhighlight %}
+
+根据 [API 文档][1]，它以相反的顺序对参数逐一调用 `append_features` 方法。实际上文档描述得并不完整，因为从 Ruby 源码来看，除了调用 `append_features` 方法外，还紧接着调用了 `included` 方法。
+
+`append_features` 和 `included` 都是回调方法。而 `append_features` 方法才是真正干活的地方，Ruby 通过这个方法将包含的逻辑转移到了被包含的模块上。这种精巧的设计能让你灵活地自定义包含模块的行为，既可以在发出包含动作的模块中重定义 `include` 方法，也可以从源头着手，重定义 `append_features` 方法。
+
+再来看看 `append_features` 的默认实现 `Module#append_features` 都做了什么。下面是 [API 文档][2]上给出的源码：
+
+{% highlight cpp %}
+
+static VALUE
+rb_mod_append_features(VALUE module, VALUE include)
+{
+    switch (TYPE(include)) {
+      case T_CLASS:
+      case T_MODULE:
+        break;
+      default:
+        Check_Type(include, T_CLASS);
+        break;
+    }
+    rb_include_module(include, module);
+
+    return module;
+}
+
+{% endhighlight %}
+
+从源代码来看，除了类型安全检查，它只是 `rb_include_module` 函数的封装，所以我们进一步跟到 `rb_include_module` 函数中看看。
+
+{% highlight cpp %}
+
+void
+rb_include_module(VALUE klass, VALUE module)
+{
+    int changed = 0;
+
+    rb_frozen_class_p(klass);
+    if (!OBJ_UNTRUSTED(klass)) {
+        rb_secure(4);
+    }
+
+    if (!RB_TYPE_P(module, T_MODULE)) {
+        Check_Type(module, T_MODULE);
+    }
+
+    OBJ_INFECT(klass, module);
+
+    changed = include_modules_at(klass, RCLASS_ORIGIN(klass), module);
+    if (changed < 0)
+        rb_raise(rb_eArgError, "cyclic include detected");
+    if (changed) rb_clear_cache();
+}
+
+{% endhighlight %}
+
+`rb_include_module` 函数也没有做多少实际的工作，它做了一些安全方面的检查，然后把工作交给了 `include_modules_at` 函数。
+
+{% highlight cpp %}
+
+static int
+include_modules_at(const VALUE klass, VALUE c, VALUE module)
+{
+    VALUE p;
+    int changed = 0;
+    const st_table *const klass_m_tbl = RCLASS_M_TBL(RCLASS_ORIGIN(klass));
+
+    while (module) {
+        int superclass_seen = FALSE;
+
+        if (RCLASS_ORIGIN(module) != module)
+            goto skip;
+        if (klass_m_tbl && klass_m_tbl == RCLASS_M_TBL(module))
+            return -1;
+        /* ignore if the module included already in superclasses */
+        for (p = RCLASS_SUPER(klass); p; p = RCLASS_SUPER(p)) {
+            switch (BUILTIN_TYPE(p)) {
+              case T_ICLASS:
+                if (RCLASS_M_TBL(p) == RCLASS_M_TBL(module)) {
+                    if (!superclass_seen) {
+                        c = p;  /* move insertion point */
+                    }
+                    goto skip;
+                }
+                break;
+              case T_CLASS:
+                superclass_seen = TRUE;
+                break;
+            }
+        }
+        c = RCLASS_SUPER(c) = rb_include_class_new(module, RCLASS_SUPER(c));
+        if (FL_TEST(klass, RMODULE_IS_REFINEMENT)) {
+            VALUE refined_class =
+                rb_refinement_module_get_refined_class(klass);
+
+            st_foreach(RMODULE_M_TBL(module), add_refined_method_entry_i,
+                       (st_data_t) refined_class);
+            FL_SET(c, RMODULE_INCLUDED_INTO_REFINEMENT);
+        }
+        if (RMODULE_M_TBL(module) && RMODULE_M_TBL(module)->num_entries)
+            changed = 1;
+        if (RMODULE_CONST_TBL(module) && RMODULE_CONST_TBL(module)->num_entries)
+            changed = 1;
+      skip:
+        module = RCLASS_SUPER(module);
+    }
+
+    return changed;
+}
+
+`include_modules_at` 函数做了许多工作，值得好好分析一下。
+
+{% endhighlight %}
 
 [1]: http://www.ruby-doc.org/core-2.1.0/Module.html#include-method
+[2]: http://www.ruby-doc.org/core-2.1.0/Module.html#method-i-append_features
