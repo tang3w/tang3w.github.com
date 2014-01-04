@@ -104,7 +104,7 @@ rb_include_module(VALUE klass, VALUE module)
 
 `rb_include_module` 函数也没有做多少实际的工作，它做了一些安全方面的检查，然后把工作交给了 `include_modules_at` 函数。
 
-{% highlight cpp %}
+{% highlight cpp linenos=table %}
 
 static int
 include_modules_at(const VALUE klass, VALUE c, VALUE module)
@@ -156,7 +156,45 @@ include_modules_at(const VALUE klass, VALUE c, VALUE module)
     return changed;
 }
 
+{% endhighlight %}
+
 `include_modules_at` 函数做了许多工作，值得好好分析一下。
+
+首先，最外层的 `while` 循环对 `module` 的祖先链（ancestors）逐一遍历。对于每个 `module`，内层的 `for` 循环会检查 `module` 是否已经包含在 `klass` 的祖先链中，如果已经包含，则跳过，否则，把 `module` 插入到 `c` 和 `c` 的父类之间。
+
+模块的插入工作是由第 31 行代码完成的，它调用 `rb_include_class_new` 函数为模块创建了一个包含类（include class），它以 `c` 的父类作为父类，接着又将这个包含类设置为 `c` 的父类。我们来看看 `rb_include_class_new` 函数是如何创建包含类的。
+
+{% highlight cpp %}
+
+VALUE
+rb_include_class_new(VALUE module, VALUE super)
+{
+    VALUE klass = class_alloc(T_ICLASS, rb_cClass);
+
+    if (BUILTIN_TYPE(module) == T_ICLASS) {
+        module = RBASIC(module)->klass;
+    }
+    if (!RCLASS_IV_TBL(module)) {
+        RCLASS_IV_TBL(module) = st_init_numtable();
+    }
+    if (!RCLASS_CONST_TBL(module)) {
+        RCLASS_CONST_TBL(module) = st_init_numtable();
+    }
+    RCLASS_IV_TBL(klass) = RCLASS_IV_TBL(module);
+    RCLASS_CONST_TBL(klass) = RCLASS_CONST_TBL(module);
+    RCLASS_M_TBL(klass) = RCLASS_M_TBL(RCLASS_ORIGIN(module));
+    RCLASS_SUPER(klass) = super;
+    if (RB_TYPE_P(module, T_ICLASS)) {
+        RBASIC(klass)->klass = RBASIC(module)->klass;
+    }
+    else {
+        RBASIC(klass)->klass = module;
+    }
+    OBJ_INFECT(klass, module);
+    OBJ_INFECT(klass, super);
+
+    return (VALUE)klass;
+}
 
 {% endhighlight %}
 
