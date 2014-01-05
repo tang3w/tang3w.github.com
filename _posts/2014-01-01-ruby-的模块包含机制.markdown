@@ -24,7 +24,7 @@ end
 
 在模块 `C` 中，语句 `include A, B` 完成了模块包含的工作，该语句以 `A`, `B` 两个模块为作为参数，调用了模块 `C` 的 `include` 方法。一切都那么自然。
 
-现在，把注意力放在 `include` 方法上，它的默认实现是 `Module#include`。其对应的 C 函数是 `rb_mod_include`。
+现在，把注意力放在 `include` 方法上，它的默认实现是 `Module#include`。根据 [API 文档][1]，它以相反的顺序对参数逐一调用 `append_features` 方法。对应的 C 函数是 `rb_mod_include`。
 
 {% highlight cpp %}
 
@@ -48,7 +48,7 @@ rb_mod_include(int argc, VALUE *argv, VALUE module)
 
 {% endhighlight %}
 
-根据 [API 文档][1]，它以相反的顺序对参数逐一调用 `append_features` 方法。实际上文档描述得并不完整，因为从 Ruby 源码来看，除了调用 `append_features` 方法外，还紧接着调用了 `included` 方法。
+从 Ruby 源码来看，除了对参数模块调用 `append_features` 方法外，还紧接着调用了 `included` 方法。所以，文档描述得并不完整，可能还没有更新。
 
 `append_features` 和 `included` 都是回调方法。而 `append_features` 方法才是真正干活的地方，Ruby 通过这个方法将包含的逻辑转移到了被包含的模块上。这种精巧的设计能让你灵活地自定义包含模块的行为，既可以在发出包含动作的模块中重定义 `include` 方法，也可以从源头着手，重定义 `append_features` 方法。
 
@@ -74,7 +74,7 @@ rb_mod_append_features(VALUE module, VALUE include)
 
 {% endhighlight %}
 
-从源代码来看，除了类型安全检查，它只是 `rb_include_module` 函数的封装，所以我们进一步跟到 `rb_include_module` 函数中看看。
+这个函数比较简单，除了类型安全检查，它只是 `rb_include_module` 函数的封装，我们进一步跟到 `rb_include_module` 函数中去看看。
 
 {% highlight cpp %}
 
@@ -102,7 +102,7 @@ rb_include_module(VALUE klass, VALUE module)
 
 {% endhighlight %}
 
-`rb_include_module` 函数也没有做多少实际的工作，它做了一些安全方面的检查，然后把工作交给了 `include_modules_at` 函数。
+同样，`rb_include_module` 函数也没有做多少实际的工作，只是做了一些安全方面的检查，然后把主要工作交给了 `include_modules_at` 函数。
 
 {% highlight cpp linenos=table %}
 
@@ -164,7 +164,7 @@ include_modules_at(const VALUE klass, VALUE c, VALUE module)
 
 模块的插入工作是由第 31 行代码完成的，它调用 `rb_include_class_new` 函数为模块创建了一个包含类（include class），它以 `c` 的父类作为父类，接着又将这个包含类设置为 `c` 的父类。我们来看看 `rb_include_class_new` 函数是如何创建包含类的。
 
-{% highlight cpp %}
+{% highlight cpp linenos=table %}
 
 VALUE
 rb_include_class_new(VALUE module, VALUE super)
@@ -198,5 +198,39 @@ rb_include_class_new(VALUE module, VALUE super)
 
 {% endhighlight %}
 
+第 4 行，`class_alloc` 创建了一个新类，并为它设置了 `T_ICLASS` 标识，有了这个标识，Ruby 就会认为它是一个包含类。接着就是一系列的初始化，将新类的内部表指向模块中对应的表。最后，将新类的 `klass` 指向模块，这样，包含类就创建完成了。
+
+第 17 行有个 `RCLASS_ORIGIN` 宏，我们来看看它的作用是什么，Ruby 源码中，该宏的定义如下：
+
+{% highlight cpp %}
+
+#define RCLASS_ORIGIN(c) (RCLASS_EXT(c)->origin)
+
+{% endhighlight %}
+
+可以看到，它指向一个类的 `origin` 成员。简单来说，它获取某个类的原始类。原始类跟模块前置有着密切的关系。关于模块前置的更多信息，请阅读[《Ruby 中模块前置的实现》][3]这篇文章。
+
+了解这些信息之后，我们来总结一下。为了便于描述，我们以文章开头的那段代码作为例子，来回顾一下模块包含的全过程。
+
+{% highlight ruby %}
+
+A = Module.new
+
+B = Module.new
+
+module C
+  include A, B    # Inclusion is done by this line
+end
+
+{% endhighlight %}
+
+1. 当调用模块 `C` 的 `include` 方法时，默认实现 `Module#include` 会以相反的顺序对参数模块回调 `append_features` 和 `included` 方法。真正的包含逻辑在 `Module#append_features` 的内部实现。
+2. 对每个被包含的模块，Ruby 会遍历其祖先链。对链上的每个模块，会首先检查是否已包含过，如果已包含，则跳过，否则为该模块创建一个包含类，插入到模块 `C` 的祖先链中。
+
+当然，以上的描述省略了一些细节，比如类型安全检查、对插入点的调整、检查循环包含、以及对 Refinement 的处理。如果读者有兴趣，可以参照源代码去理解。
+
+模块包含的本质是将被包含的模块的祖先链插入到另一个模块的祖先链中，其实最终，都是在维护一个祖先链。
+
 [1]: http://www.ruby-doc.org/core-2.1.0/Module.html#include-method
 [2]: http://www.ruby-doc.org/core-2.1.0/Module.html#method-i-append_features
+[3]: 

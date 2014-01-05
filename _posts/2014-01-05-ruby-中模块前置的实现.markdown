@@ -1,0 +1,171 @@
+---
+layout: post
+title: "Ruby 中模块前置的实现"
+published: false
+categories:
+- Ruby
+---
+
+Ruby 2.0 为模块添加了一个 `Module#prepend` 方法，根据 [API 文档][1]的描述，它以相反的顺序对参数逐一调用 `prepend_features` 方法。和模块包含类似，会把一个模块的祖先链插入到另一个模块的祖先链中，但跟模块包含把祖先链插到该模块之后不一样，它会把祖先链插到该模块之前。我喜欢把这个特性叫做<em class="color">模块前置</em>。
+
+先举个例子来说明模块前置的作用，并和模块包含作了对比。在这个例子中，类 `C` 前置了模块 `A` 和 `B`；类 `D` 包含了模块 `A` 和 `B`。
+
+{% highlight ruby linenos=table %}
+
+module A
+  def foo; 'A' end
+end
+
+module B
+  def foo; 'B' end
+end
+
+class C
+  prepend A, B   # Prepending is done by this line
+
+  def foo; 'C' end
+end
+
+class D
+  include A, B
+
+  def foo; 'D' end
+end
+
+C.ancestors # => [A, B, C, Object, Kernel, BasicObject]
+D.ancestors # => [D, A, B, Object, Kernel, BasicObject]
+
+C.new.foo # => 'A'
+D.new.foo # => 'D'
+
+{% endhighlight %}
+
+第 10 行，我们在 `C` 中前置了模块 `A` 和 `B`，这样 `A` 和 `B` 就插入到 `C` 的祖先链中了。从 21 和 22 行中的注释中，我们可以看到，在 `C` 的祖先链中，`A` 和 `B` 位于 `C` 之前。而在 `D` 的祖先链中，`A` 和 `B` 位于 `D` 之后。
+
+这就是为什么第 24 行，`C.new.foo` 的返回值是 `'A'`，因为模块 `A` 前置于 `C`，位于祖先链的最前面，方法查找会优先找到 `A` 中的 `foo` 方法。
+
+我们看到了模块前置的强大的特性，但疑问也随之而来。最显而易见的问题是，`C.ancestors` 为什么不是从类 `C` 开始。要解开这个疑问，首先应该弄清楚 `prepend` 方法都做了哪些工作。我们跟到源代码中去一探究竟，下面是 `prepend` 的默认实现 `Module#prepend` 对应的源代码：
+
+{% highlight cpp %}
+
+static VALUE
+rb_mod_prepend(int argc, VALUE *argv, VALUE module)
+{
+    int i;
+    ID id_prepend_features, id_prepended;
+
+    CONST_ID(id_prepend_features, "prepend_features");
+    CONST_ID(id_prepended, "prepended");
+    for (i = 0; i < argc; i++)
+        Check_Type(argv[i], T_MODULE);
+    while (argc--) {
+        rb_funcall(argv[argc], id_prepend_features, 1, module);
+        rb_funcall(argv[argc], id_prepended, 1, module);
+    }
+    return module;
+}
+
+{% endhighlight %}
+
+可以看到，它的行为和 `Module#include` 方法几乎一样，只不过回调的方法不一样。这里，它回调了参数模块的 `prepend_features` 方法和 `prepended` 方法。同样，`Module#prepend_features` 才是真正干活的地方，所以跟进去看看。
+
+{% highlight cpp %}
+
+static VALUE
+rb_mod_prepend_features(VALUE module, VALUE prepend)
+{
+    switch (TYPE(prepend)) {
+      case T_CLASS:
+      case T_MODULE:
+        break;
+      default:
+        Check_Type(prepend, T_CLASS);
+        break;
+    }
+    rb_prepend_module(prepend, module);
+
+    return module;
+}
+
+{% endhighlight %}
+
+它做了一些类型方面的检查，然后把工作交给了 `rb_prepend_module` 函数，我们看看 `rb_prepend_module` 函数做了什么。
+
+{% highlight cpp linenos=table %}
+
+void
+rb_prepend_module(VALUE klass, VALUE module)
+{
+    void rb_vm_check_redefinition_by_prepend(VALUE klass);
+    VALUE origin;
+    int changed = 0;
+
+    rb_frozen_class_p(klass);
+    if (!OBJ_UNTRUSTED(klass)) {
+        rb_secure(4);
+    }
+
+    Check_Type(module, T_MODULE);
+
+    OBJ_INFECT(klass, module);
+
+    origin = RCLASS_ORIGIN(klass);
+    if (origin == klass) {
+        origin = class_alloc(T_ICLASS, klass);
+        RCLASS_SUPER(origin) = RCLASS_SUPER(klass);
+        RCLASS_SUPER(klass) = origin;
+        RCLASS_ORIGIN(klass) = origin;
+        RCLASS_M_TBL(origin) = RCLASS_M_TBL(klass);
+        RCLASS_M_TBL(klass) = st_init_numtable();
+        st_foreach(RCLASS_M_TBL(origin), move_refined_method,
+                   (st_data_t) RCLASS_M_TBL(klass));
+    }
+    changed = include_modules_at(klass, klass, module);
+    if (changed < 0)
+        rb_raise(rb_eArgError, "cyclic prepend detected");
+    if (changed) {
+        rb_clear_cache();
+        rb_vm_check_redefinition_by_prepend(klass);
+    }
+}
+
+{% endhighlight %}
+
+这个函数做了一些工作，我们来分析一下。前 16 行都是在做一些类型检查等工作，我们跳过。从第 17 行开始分析。
+
+首先，宏 `RCLASS_ORIGIN` 获取 `klass` 的 `origin` 成员，并且把它和 `klass` 比较。我们不知道 `origin` 字段有什么作用，我们先假设测试条件为真，即 `klass` 的 `origin` 成员指向自身。我们来分析一下 `if` 语句中的逻辑：
+
+1. 19 行为 `klass` 创建了一个新的包含类，我们把它称为原始类；
+2. 20 ~ 21 行把新创建的包含类插入到 `klass` 和 `klass` 的父类中间；
+3. 22 行将 `klass` 的 `origin` 成员指向了新类；
+4. 接下来，23 ~ 24 行把 `klass` 的方法表转移到新类中，并清空 `klass` 的方法表；
+5. 最后，25 行又把 `klass` 原先的方法表中的 Refined 方法移了回来。
+
+分析完 `if` 语句，我们继续前进，来到第 28 行。等等，你好像看到了熟悉的东西。没错，那就是 `include_modules_at` 方法。在[前一篇文章][2]中，我们讨论了这个函数，它用来包含某个模块。你简直不敢相信自己的眼睛，明明是在前置模块，怎么突然又变成包含模块了？
+
+是的，没错，它就是在包含模块。被包含的模块的祖先链插入到了 `klass` 和 `klass` 的原始类之间。由于 `klass` 内部的方法表已经转移到上游的原始类中，所以插入的位置正好合适。Ruby 通过这种变换，巧妙地将前置模块转化为包含模块，太棒了。
+
+下面这个图描述了文章开头的那个例子中，类 `C` 中 `prepend A, B` 语句执行前后的状态：
+
+{% highlight text %}
+
+           +-----+      +--------+
+  Before:  |  C  |----->| Object |
+           +-----+      +--------+
+
+              +--------------- klass ----------------+
+              |                                      |
+              v                                      |
+           +-----+      +-----+      +-----+      +-----+      +--------+
+   After:  |  C  |----->|  A  |----->|  B  |----->|  C' |+---->| Object |
+           +-----+      +-----+      +-----+      +-----+      +--------+
+              |                                      ^
+              |                                      |
+              +--------------- origin ---------------+
+
+{% endhighlight %}
+
+正如之前分析的那样，`C'` 就是那个新创建的包含类，它是 `C` 的原始类。
+
+[1]: http://www.ruby-doc.org/core-2.0.0/Module.html#method-i-prepend
+[2]: 

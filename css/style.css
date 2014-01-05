@@ -108,6 +108,7 @@ div#content ul li {
 
 div#content .cnt li {
 	margin: 5px 0 5px 35px;
+	text-align: justify;
 }
 div#header {
 	font-size:13px;
@@ -408,6 +409,7 @@ span.balloon {
 
 #content .cnt p {
 	margin: 20px 0;
+	text-align: justify;
 }
 
 #feed .badget {
@@ -502,4 +504,9 @@ div.vedio {
 
 #basic .cnt h3 {
 	color: black;
+}
+
+#content em.color {
+	font-weight: normal;
+	color: #058282;
 }
