@@ -94,6 +94,6 @@
 }
 
 .highlight code.text {
-	font-family: Consolas;
-	font-size: 16px;
+	font-family: Menlo, Consolas, monospace;
+	font-size: 15px;
 }
