@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Ruby 的模块包含机制"
-published: false
+published: true
 categories:
 - ruby
 ---
@@ -162,6 +162,8 @@ include_modules_at(const VALUE klass, VALUE c, VALUE module)
 
 首先，最外层的 `while` 循环对 `module` 的祖先链（ancestors）逐一遍历。对于每个 `module`，内层的 `for` 循环会检查 `module` 是否已经包含在 `klass` 的祖先链中，如果已经包含，则跳过，否则，把 `module` 插入到 `c` 和 `c` 的父类之间。
 
+在测试 `module` 是否已包含在祖先链的过程中，变量 `superclass_seen` 用来判断是否越过了一个非包含类，如果是，则不移动插入点。所以模块包含不会将模块插到祖先链中下一个非包含类之后。
+
 模块的插入工作是由第 31 行代码完成的，它调用 `rb_include_class_new` 函数为模块创建了一个包含类（include class），它以 `c` 的父类作为父类，接着又将这个包含类设置为 `c` 的父类。我们来看看 `rb_include_class_new` 函数是如何创建包含类的。
 
 {% highlight cpp linenos=table %}
@@ -233,4 +235,4 @@ end
 
 [1]: http://www.ruby-doc.org/core-2.1.0/Module.html#include-method
 [2]: http://www.ruby-doc.org/core-2.1.0/Module.html#method-i-append_features
-[3]: 
+[3]: http://tang3w.com/ruby/2014/01/05/ruby-%E4%B8%AD%E6%A8%A1%E5%9D%97%E5%89%8D%E7%BD%AE%E7%9A%84%E5%AE%9E%E7%8E%B0.html

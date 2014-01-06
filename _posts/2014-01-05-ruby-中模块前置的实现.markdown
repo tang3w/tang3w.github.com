@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Ruby 中模块前置的实现"
-published: false
+published: true
 categories:
 - Ruby
 ---
@@ -197,7 +197,7 @@ rb_mod_ancestors(VALUE mod)
 
 模块前置其实也是通过模块包含来完成的，只不过在包含之前做了一些特殊处理：创建了一个原始类，然后在原始类之前包含模块。但由于原始类也是一个包含类，因此被前置模块的某个祖先可能会越过原始类，比如下面这个例子：
 
-{% highlight ruby linenos=table %}
+{% highlight ruby %}
 
 A = Module.new
 
@@ -220,7 +220,7 @@ D.new.bar # => 'D'
 
 {% endhighlight %}
 
-下面这副图展示了类 `D` 前置模块 `C` 时的情形：
+类 `D` 在前置模块 `C` 之前，包含了模块 `A`。下图中，前两个是 `D` 前置模块 `C` 之前，`D` 和 `C` 的祖先链，第三个是 `D` 前置模块 `C` 之后，`D` 的祖先链。
 
 {% highlight text %}
 
@@ -230,7 +230,7 @@ D.new.bar # => 'D'
 
 +---+    +---+    +---+    +--------+
 | C |--->| A |--->| B |--->| Object |
-+---+    +-+-+    +---+    +--------+
++---+    +---+    +---+    +--------+
            |
            +-----------------+  A 使得插入点移到了 D' 的后面
                              |
@@ -241,5 +241,9 @@ D.new.bar # => 'D'
 
 {% endhighlight %}
 
+正如图中标注的那样，模块 `A` 的存在使得插入点移到了 `D'` 的后面，所以 `B` 位于 `D'` 的后面。所以 `D.new.bar` 的值是 `'D'` 而不是 `'B'`。
+
+现在，我们理解了模块前置在 Ruby 内部是如何实现的。模块前置非常有用，只要明白了它是如何工作的，你一定能想到它的用武之地。
+
 [1]: http://www.ruby-doc.org/core-2.0.0/Module.html#method-i-prepend
-[2]: 
+[2]: http://tang3w.com/ruby/2014/01/01/ruby-%E7%9A%84%E6%A8%A1%E5%9D%97%E5%8C%85%E5%90%AB%E6%9C%BA%E5%88%B6.html
