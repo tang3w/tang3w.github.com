@@ -10,4 +10,10 @@ categories:
 
 ### Charles
 
-Charles 是一个 HTTP 代理工具，
+Charles 是一个 HTTP 监视器，它是以 HTTP 代理的方式实现的。作为客户端和服务器通讯的中间人，它可以将 HTTP 传输的数据都展示出来，这给数据调试带来了极大的便利。通常，可以用它来分析第三方库、框架以及其他互联网应用程序的行为。
+
+Charles 同时支持 HTTP 和 HTTPS 两种协议。对于 HTTP 协议，无需额外的设置就能看到明文数据，因为 HTTP 协议本身是不对数据加密的。但对于 HTTPS 协议，Charles 默认只是转发 HTTPS 请求，所以你只能看到乱码的加密数据。通过设置，Charles 也支持 HTTPS 协议。针对 iOS 的设置，可以参考官网上的这篇文章：[来自 iPhone 应用程序的 SSL 连接][1]。
+
+除此之外，Charles 还有一些其他有用的功能。
+
+[1]: http://www.charlesproxy.com/documentation/faqs/ssl-connections-from-within-iphone-applications/
