@@ -20,7 +20,15 @@ Charles 同时支持 HTTP 和 HTTPS 两种协议。对于 HTTP 协议，无需�
 
 ### CocoaPods
 
-[CocoaPods][6] 是 Objective-C 项目的依赖管理工具。
+[CocoaPods][6] 是 Objective-C 项目的依赖管理工具。利用它，可以轻松地将第三方库集成到现有项目中。它是建立在操作 Xcode 项目文件的基础上的，它通过一个配置文件来计算依赖，下载第三方库并修改 Xcode 项目文件，比如 .xcworkspace 和 .xcconfig 文件。
+
+CocoaPods 的出现改变了 Objective-C 社区的生态环境，就像 RubyGems 之于 Ruby 那样，开发者可以创建自己的 Pod 并把它贡献出来。你只需要在 Podfile 配置文件中指定你需要使用的 Pods，CocoaPods 会帮你处理好依赖关系并设置 Xcode 项目。你无需再像以前那样，手动下载第三方库的源码，然后设置系统 Frameworks 或者编译选项。CocoaPods 会帮你处理好这一切。
+
+### xctool
+
+[xctool][7] 是由 Facebook 开源的 Objective-C 命令行构建工具，用来代替 Xcode 内建的 xcodebuild。之所以出现 xctool 是因为 xcodebuild 对命令行的支持不够，因为 Xcode 没有把所有构建和测试的逻辑通过 xcodebuild 完全暴露出来，xctool 正好弥补了这些缺点。
+
+创建 xctool 的初衷是为了更好地支持持续集成，后来许多开发者将它用在自己的机器上，用来实现自动化构建和测试等工作。值得一提的是，它还能让测试变得并行，缩短测试的时间。
 
 [1]: http://www.charlesproxy.com/
 [2]: http://en.wikipedia.org/wiki/Man-in-the-middle_attack
@@ -28,3 +36,4 @@ Charles 同时支持 HTTP 和 HTTPS 两种协议。对于 HTTP 协议，无需�
 [4]: http://www.cocoanetics.com/2010/12/how-to-spy-on-the-web-traffic-of-any-app/
 [5]: https://github.com/iSECPartners/ios-ssl-kill-switch
 [6]: http://cocoapods.org/
+[7]: https://github.com/facebook/xctool
