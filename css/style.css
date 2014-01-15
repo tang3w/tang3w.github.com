@@ -517,3 +517,14 @@ span.translate {
 	color: #bdc3c7;
 	left: -35px;
 }
+
+::selection {
+	background-color:#38485a;
+	color:#ffffff;
+	text-shadow:0 1px 0 rgba(0,0,0,0.3)
+}
+::-moz-selection{
+	background-color:#38485a;
+	color:#ffffff;
+	text-shadow:0 1px 0 rgba(0,0,0,0.3)
+}
