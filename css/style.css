@@ -101,6 +101,8 @@ div#content img, div#content object {
 	border-radius:5px;
 	-moz-box-shadow:0 1px 0 #FFFFFF;
 	max-width: 700px;
+
+	border: 1px #cccccc solid;
 }
 div#content ul li {
 	list-style:disc inside none;
