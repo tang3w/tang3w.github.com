@@ -1,5 +1,5 @@
 markdown: rdiscount
-pygments: true
+highlighter: pygments
 
 title: 言无不尽
 google_analytics: UA-34425969-1
