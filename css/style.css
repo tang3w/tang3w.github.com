@@ -3,8 +3,7 @@ body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,
 	padding:0;
 }
 table {
-	border-collapse:collapse;
-	border-spacing:0;
+  border-collapse:collapse;
 }
 fieldset,img { 
 	border:0;
@@ -525,8 +524,29 @@ span.translate {
 	color:#ffffff;
 	text-shadow:0 1px 0 rgba(0,0,0,0.3)
 }
+
 ::-moz-selection{
 	background-color:#38485a;
 	color:#ffffff;
 	text-shadow:0 1px 0 rgba(0,0,0,0.3)
+}
+
+table {
+  width: 100%;
+}
+
+table td,
+table th { 
+  border-bottom: 1px #cccccc solid;
+  padding: 3px 0;
+}
+
+table th {
+  border-width: 3px;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+table td {
+  background: white;
 }

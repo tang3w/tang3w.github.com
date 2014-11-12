@@ -32,32 +32,135 @@ CSLayout *contentLayout = [CSLayout layoutOfView:contentView];
 
 这个例子为视图 `contentView` 的布局创建了 4 个约束。当父视图需要重新布局时（例如添加了子视图，或者尺寸发生了变化），`contentView` 也会根据自身布局的约束动态地改变尺寸。
 
-### SLL 语言
+### 约束
 
-CSLayout 使用 SLL 语言来描述约束。SLL 的部分语法已经在介绍部分描述了，它就是逗号分隔的赋值语句。这一节主要介绍 CSLayout 支持的约束，以及约束之间的算术运算。
+CSLayout 的约束使用 SLL 语言来描述。SLL 的部分语法已经在介绍部分描述了。在 SLL 的赋值语句中，左值表示约束名，CSLayout 支持以下 14 种约束：
 
-在 SLL 的赋值语句中，左值表示约束名，CSLayout 支持以下 14 个约束：
+<table>
+<thead>
+<tr>
+<th width="50%">约束名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
 
-1.  tt，顶部至父视图顶部的距离；
-2.  tb，顶部至父视图底部的距离；
-3.  ll，左侧至父视图左侧的距离；
-4.  lr，左侧至父视图右侧的距离；
-5.  bb，底部至父视图底部的距离；
-6.  bt，底部至父视图顶部的距离；
-7.  rr，右侧至父视图右侧的距离；
-8.  rl，右侧至父视图左侧的距离；
-9.  ct，中点到父视图顶部的距离；
-10. cl，中点到父视图左侧的距离；
-11. minw，视图的最小宽度；
-12. maxw，视图的最大宽度；
-13. minh，视图的最小高度；
-14. maxh，视图的最大高度。
+<tr><td><code>tt</td>
+<td>视图顶部至父视图顶部</td></tr>
+<tr><td><code>tb</code></td>
+<td>视图顶部至父视图底部</td></tr>
+<tr><td><code>ll</code></td>
+<td>视图左侧至父视图左侧</td></tr>
+<tr><td><code>lr</code></td>
+<td>视图左侧至父视图右侧</td></tr>
+<tr><td><code>bb</code></td>
+<td>视图底部至父视图底部</td></tr>
+<tr><td><code>bt</code></td>
+<td>视图底部至父视图顶部</td></tr>
+<tr><td><code>rr</code></td>
+<td>视图右侧至父视图右侧</td></tr>
+<tr><td><code>rl</code></td>
+<td>视图右侧至父视图左侧</td></tr>
+<tr><td><code>ct</code></td>
+<td>视图中点到父视图顶部</td></tr>
+<tr><td><code>cl</code></td>
+<td>视图中点到父视图左侧</td></tr>
+<tr><td><code>minw</code></td>
+<td>视图的最小宽度</td> </tr>
+<tr><td><code>maxw</code></td>
+<td>视图的最大宽度</td> </tr>
+<tr><td><code>minh</code></td>
+<td>视图的最小高度</td></tr>
+<tr><td><code>maxh</code></td>
+<td>视图的最大高度</td></tr>
 
-右值表示约束值，约束值可以是以下 4 种形式的操作数，也可以是由这些操作数构成的更复杂的算术表达式：
+</tbody>
+</table>
 
-1. 浮点数，例如 20
-2. 百分数，例如 80%
-3. 格式化字符串，例如 %tt
-4. 自身约束，例如 tt
+右值表示约束值，约束值可以是下面列出的 4 种形式，也可以是算术表达式：
+
+<table>
+<thead>
+<tr>
+<th width="50%">约束值</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody>
+
+<tr><td>浮点数</td>
+<td><code>5</code> <code>-10</code> <code>20.0f</code></td></tr>
+<tr><td>百分数</td>
+<td><code>5%</code> <code>-10%</code> <code>20.0%</code></td></tr>
+<tr><td>约束名</td>
+<td><code>tt</code> <code>minw</code></td></tr>
+<tr><td>格式化字符串</td>
+<td><code>%tt</code> <code>%w</code></td></tr>
+
+</tbody>
+<table>
+
+格式化字符串用来指定其他视图的坐标值，下表列出了 CSLayout 支持的 12 种格式化字符串：
+
+<table>
+<thead>
+<tr>
+<th width="50%">格式化字符串</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+
+<tr><td><code>%tt</td>
+<td>视图顶部至父视图顶部</td></tr>
+<tr><td><code>%tb</code></td>
+<td>视图顶部至父视图底部</td></tr>
+<tr><td><code>%ll</code></td>
+<td>视图左侧至父视图左侧</td></tr>
+<tr><td><code>%lr</code></td>
+<td>视图左侧至父视图右侧</td></tr>
+<tr><td><code>%bb</code></td>
+<td>视图底部至父视图底部</td></tr>
+<tr><td><code>%bt</code></td>
+<td>视图底部至父视图顶部</td></tr>
+<tr><td><code>%rr</code></td>
+<td>视图右侧至父视图右侧</td></tr>
+<tr><td><code>%rl</code></td>
+<td>视图右侧至父视图左侧</td></tr>
+<tr><td><code>%ct</code></td>
+<td>视图中点到父视图顶部</td></tr>
+<tr><td><code>%cl</code></td>
+<td>视图中点到父视图左侧</td></tr>
+<tr><td><code>%w</code></td>
+<td>视图的宽度</td> </tr>
+<tr><td><code>%h</code></td>
+<td>视图的高度</td></tr>
+
+</tbody>
+</table>
+
+CSLayout 支持下面 5 种算术运算符：
+
+<table>
+<thead>
+<tr>
+<th width="50%">运算符</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody>
+
+<tr><td><code>&plus;</code></td>
+<td><code>10 &plus; 20</code> <code>50% &plus; 10</code> <code>%w &plus; 5</code></td></tr>
+<tr><td><code>-</code></td>
+<td><code>10 - 20</code> <code>50% - 10</code> <code>%w - 5</code></td></tr>
+<tr><td><code>&ast;</code></td>
+<td><code>50 &ast; 2</code> <code>100% &ast; 0.5</code> <code>%h &ast; 2</code></td></tr>
+<tr><td><code>/</code></td>
+<td><code>100 / 2</code> <code>100% / 2</code> <code>%h / 2</code></td></tr>
+
+</tbody>
+<table>
+
 
 约束值的会根据不同的约束名有不同的含义。
