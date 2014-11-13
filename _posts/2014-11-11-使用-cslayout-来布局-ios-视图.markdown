@@ -83,11 +83,11 @@ SLL 支持基本算术运算。SSL 一共有 5 个算术运算符：
 </tr>
 
 </tbody>
-<table>
+</table>
 
-你还可以通过 `()` 来创建子表达式，例如 `(2 + 3) × 4`，来改变表达式的求值顺序。
+另外，还可以通过 `()` 来创建子表达式，例如 `(2 + 3) × 4`，来改变表达式的求值顺序。
 
-这就是 SLL 语言的全部语法，非常简单。
+以上就是 SLL 语言的全部语法，非常简单。
 
 ### 约束
 
@@ -96,107 +96,249 @@ CSLayout 的约束使用 SLL 语言来描述。在 SLL 的赋值语句中，左�
 <table>
 <thead>
 <tr>
-<th width="50%">约束名</th>
+<th width="20%">约束名</th>
+<th width="25%">方向</th>
 <th>说明</th>
 </tr>
 </thead>
 <tbody>
 
-<tr><td><code>tt</td>
-<td>视图顶部至父视图顶部</td></tr>
-<tr><td><code>tb</code></td>
-<td>视图顶部至父视图底部</td></tr>
-<tr><td><code>ll</code></td>
-<td>视图左侧至父视图左侧</td></tr>
-<tr><td><code>lr</code></td>
-<td>视图左侧至父视图右侧</td></tr>
-<tr><td><code>bb</code></td>
-<td>视图底部至父视图底部</td></tr>
-<tr><td><code>bt</code></td>
-<td>视图底部至父视图顶部</td></tr>
-<tr><td><code>rr</code></td>
-<td>视图右侧至父视图右侧</td></tr>
-<tr><td><code>rl</code></td>
-<td>视图右侧至父视图左侧</td></tr>
-<tr><td><code>ct</code></td>
-<td>视图中点到父视图顶部</td></tr>
-<tr><td><code>cl</code></td>
-<td>视图中点到父视图左侧</td></tr>
-<tr><td><code>minw</code></td>
-<td>视图的最小宽度</td> </tr>
-<tr><td><code>maxw</code></td>
-<td>视图的最大宽度</td> </tr>
-<tr><td><code>minh</code></td>
-<td>视图的最小高度</td></tr>
-<tr><td><code>maxh</code></td>
-<td>视图的最大高度</td></tr>
+<tr>
+<td><code>tt</td>
+<td>垂直</td>
+<td>视图顶部至父视图顶部的约束</td>
+</tr>
+
+<tr>
+<td><code>tb</code></td>
+<td>垂直</td>
+<td>视图顶部至父视图底部的约束</td>
+</tr>
+
+<tr>
+<td><code>ll</code></td>
+<td>水平</td>
+<td>视图左侧至父视图左侧的约束</td>
+</tr>
+
+<tr>
+<td><code>lr</code></td>
+<td>水平</td>
+<td>视图左侧至父视图右侧的约束</td>
+</tr>
+
+<tr>
+<td><code>bb</code></td>
+<td>垂直</td>
+<td>视图底部至父视图底部的约束</td>
+</tr>
+
+<tr>
+<td><code>bt</code></td>
+<td>垂直</td>
+<td>视图底部至父视图顶部的约束</td>
+</tr>
+
+<tr>
+<td><code>rr</code></td>
+<td>水平</td>
+<td>视图右侧至父视图右侧的约束</td>
+</tr>
+
+<tr>
+<td><code>rl</code></td>
+<td>水平</td>
+<td>视图右侧至父视图左侧的约束</td>
+</tr>
+
+<tr>
+<td><code>ct</code></td>
+<td>垂直</td>
+<td>视图中点到父视图顶部的约束</td>
+</tr>
+
+<tr>
+<td><code>cl</code></td>
+<td>水平</td>
+<td>视图中点到父视图左侧的约束</td>
+</tr>
+
+<tr>
+<td><code>minw</code></td>
+<td>水平</td>
+<td>视图的最小宽度的约束</td>
+</tr>
+
+<tr>
+<td><code>maxw</code></td>
+<td>水平</td>
+<td>视图的最大宽度的约束</td>
+</tr>
+
+<tr>
+<td><code>minh</code></td>
+<td>垂直</td>
+<td>视图的最小高度的约束</td>
+</tr>
+
+<tr>
+<td><code>maxh</code></td>
+<td>垂直</td>
+<td>视图的最大高度的约束</td>
+</tr>
 
 </tbody>
 </table>
 
-右值表示约束值，约束值可以是下面列出的 4 种形式，也可以是算术表达式：
+所有约束可以从方向上分为两类：**水平约束**和**垂直约束**。这样分类是有意义的，因为某些约束值会根据所属约束方向的不同有不同的解释，比如后面马上要介绍的百分数就是这样。判断某个约束是哪个方向非常简单，仅从字面上就可以判断。例如 `ll` 表示左侧至父视图左侧的约束，当然是水平约束；再如 `minh`，它表示最小高度，当然是一个垂直约束。
+
+赋值语句的右值就是约束值，CSLayout 支持 4 种类型的约束值：
 
 <table>
 <thead>
 <tr>
-<th width="50%">约束值</th>
-<th>例子</th>
-</tr>
-</thead>
-<tbody>
-
-<tr><td>浮点数</td>
-<td><code>5</code> <code>-10</code> <code>20.0f</code></td></tr>
-<tr><td>百分数</td>
-<td><code>5%</code> <code>-10%</code> <code>20.0%</code></td></tr>
-<tr><td>约束名</td>
-<td><code>tt</code> <code>minw</code></td></tr>
-<tr><td>格式说明符</td>
-<td><code>%tt</code> <code>%w</code></td></tr>
-
-</tbody>
-<table>
-
-格式说明符是外部参数的占位符，下表列出了 CSLayout 支持的 13 种格式化字符串：
-
-<table>
-<thead>
-<tr>
-<th width="50%">格式说明符</th>
+<th width="20%">约束值</th>
+<th width="25%">示例</th>
 <th>说明</th>
 </tr>
 </thead>
 <tbody>
 
-<tr><td><code>%tt</td>
-<td>视图顶部至父视图顶部</td></tr>
-<tr><td><code>%tb</code></td>
-<td>视图顶部至父视图底部</td></tr>
-<tr><td><code>%ll</code></td>
-<td>视图左侧至父视图左侧</td></tr>
-<tr><td><code>%lr</code></td>
-<td>视图左侧至父视图右侧</td></tr>
-<tr><td><code>%bb</code></td>
-<td>视图底部至父视图底部</td></tr>
-<tr><td><code>%bt</code></td>
-<td>视图底部至父视图顶部</td></tr>
-<tr><td><code>%rr</code></td>
-<td>视图右侧至父视图右侧</td></tr>
-<tr><td><code>%rl</code></td>
-<td>视图右侧至父视图左侧</td></tr>
-<tr><td><code>%ct</code></td>
-<td>视图中点到父视图顶部</td></tr>
-<tr><td><code>%cl</code></td>
-<td>视图中点到父视图左侧</td></tr>
-<tr><td><code>%w</code></td>
-<td>视图的宽度</td> </tr>
-<tr><td><code>%h</code></td>
-<td>视图的高度</td></tr>
-<tr><td><code>%n</code></td>
-<td>NSNumber 对象</td></tr>
+<tr>
+<td>浮点数</td>
+<td><code>5</code> <code>-10</code> <code>20.0f</code></td>
+<td>表示固定大小的点 (point)</td>
+</tr>
+
+<tr>
+<td>百分数</td>
+<td><code>5%</code> <code>-10%</code> <code>20.0%</code></td>
+<td>如果所属约束是水平约束，表示父视图宽度的百分比；<br/>如果所属约束是垂直约束，表示父视图高度的百分比</td>
+</tr>
+
+<tr>
+<td>约束名</td>
+<td><code>tt</code> <code>minw</code></td>
+<td>表示视图自身布局的某个约束的约束值</td>
+</tr>
+
+<tr>
+<td>格式说明符</td>
+<td><code>%tt</code> <code>%w</code> <code>%f</code></td>
+<td>表示外部传入的对象，例如 <code>%tt</code> 表示某个视图的顶部到其父视图顶部的距离</td>
+</tr>
 
 </tbody>
 </table>
 
+格式说明符用来指定外部传入的对象。下表列出了 CSLayout 支持的 13 种格式化字符串：
 
-约束值的会根据不同的约束名有不同的含义。
+<table>
+<thead>
+<tr>
+<th width="20%">格式说明符</th>
+<th width="25%">类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+
+<tr>
+<td><code>%tt</td>
+<td><code>UIView *</code></td>
+<td>视图顶部至父视图顶部的距离</td>
+</tr>
+
+<tr>
+<td><code>%tb</code></td>
+<td><code>UIView *</code></td>
+<td>视图顶部至父视图底部的距离</td>
+</tr>
+
+<tr>
+<td><code>%ll</code></td>
+<td><code>UIView *</code></td>
+<td>视图左侧至父视图左侧的距离</td>
+</tr>
+
+<tr>
+<td><code>%lr</code></td>
+<td><code>UIView *</code></td>
+<td>视图左侧至父视图右侧的距离</td>
+</tr>
+
+<tr>
+<td><code>%bb</code></td>
+<td><code>UIView *</code></td>
+<td>视图底部至父视图底部的距离</td>
+</tr>
+
+<tr>
+<td><code>%bt</code></td>
+<td><code>UIView *</code></td>
+<td>视图底部至父视图顶部的距离</td>
+</tr>
+
+<tr>
+<td><code>%rr</code></td>
+<td><code>UIView *</code></td>
+<td>视图右侧至父视图右侧的距离</td>
+</tr>
+
+<tr>
+<td><code>%rl</code></td>
+<td><code>UIView *</code></td>
+<td>视图右侧至父视图左侧的距离</td>
+</tr>
+
+<tr>
+<td><code>%ct</code></td>
+<td><code>UIView *</code></td>
+<td>视图中点到父视图顶部的距离</td>
+</tr>
+
+<tr>
+<td><code>%cl</code></td>
+<td><code>UIView *</code></td>
+<td>视图中点到父视图左侧的距离</td>
+</tr>
+
+<tr>
+<td><code>%w</code></td>
+<td><code>UIView *</code></td>
+<td>视图的宽度</td>
+</tr>
+
+<tr>
+<td><code>%h</code></td>
+<td><code>UIView *</code></td>
+<td>视图的高度</td>
+</tr>
+
+<tr>
+<td><code>%f</code></td>
+<td><code>float</code></td>
+<td>浮点数，固定点数</td>
+</tr>
+
+</tbody>
+</table>
+
+前 12 个格式说明符指定其他视图某个方向上的尺寸，它们将在约束被求解时动态计算大小。格式说明符也同时建立了视图对其他视图的**依赖关系**。最后一个格式说明符指定一个浮点数，它建立了对父视图的隐式依赖关系。
+
+在 CSLayout 内部，依赖关系是通过有向无环图（DAG）表示的。所以，**CSLayout 不支持视图之间的相互依赖**。所以下面的例子将会引发异常：
+
+{% highlight objective-c %}
+UIView *view1 = [[UIView alloc] init];
+UIView *view2 = [[UIView alloc] init];
+
+CSLayout *layout1 = [CSLayout layoutOfView:view1];
+CSLayout *layout2 = [CSLayout layoutOfView:view2];
+
+[layout1 addRule:@"rl = %ll", view2];
+[layout2 addRule:@"ll = %rl", view1]; // Error
+
+[layout1 addRule:@"rl = %ll + 50", view1];  // Error
+
+[self.view addSubview:contentView];
+{% endhighlight %}
