@@ -328,7 +328,7 @@ CSLayout 的约束使用 SLL 语言来描述。在 SLL 的赋值语句中，左�
 
 #### 依赖关系
 
-CSLayout 在设置约束时，也会同时建立视图之间的依赖关系。依赖关系反应了视图布局的求解顺序。如果视图 `A` 依赖于视图 `B`，那么 `B` 的布局比 `A` 的布局先计算。
+CSLayout 在设置约束时，也会同时建立视图之间的依赖关系。依赖关系决定了视图布局的求解顺序。如果视图 `A` 依赖于视图 `B`，那么 `B` 的布局比 `A` 的布局先计算。
 
 在 CSLayout 内部，依赖关系是通过有向无环图（DAG）表示的。所以，**CSLayout 不支持视图之间的相互依赖**。所以下面的例子将会引发异常：
 
@@ -348,3 +348,30 @@ CSLayout *layout2 = [CSLayout layoutOfView:view2];
 {% endhighlight %}
 
 以上代码有两处地方会引发循环依赖异常。在第 7 行，`view1` 的布局规则中引用了 `view2`，因此，`view1` 依赖于 `view2`。而在第 8 行，`view2` 的布局规则中反过来引用了 `view1`，这样，`view2` 依赖于 `view1`。就出现了依赖循环。在第 10 行，`view1` 的布局规则中引用了 `view1` 自身，也会导致依赖循环。
+
+通过依赖关系来决定布局计算顺序的决定是基于实现的复杂度和性能考虑的。正是由于这种轻量的实现，它的效率会比 Auto Layout 高，因为它不会对多个约束进行多项式求解，仅仅是拓扑排序的复杂度。
+
+尽管存在这种限制，CSLayout 足以应付绝大多数布局问题。下一节将介绍 CSLayout 的综合运用。
+
+### 综合运用
+
+在现实情况中，通常会遇到子视图右侧距离父视图右侧固定距离的情况，以下代码指定视图 `view` 右侧距离其父视图右侧的距离为 10。
+
+{% highlight objective-c %}
+UIView *view = [[UIView alloc] init];
+
+CSLayout *layout = [CSLayout layoutOfView:view];
+
+[layout addRule:@"rr = 10"];
+{% endhighlight %}
+
+再比如，经常会遇到一个视图的顶部距离前一个视图的顶部固定距离，这时可以这样：
+
+{% highlight objective-c %}
+UIView *view1 = [[UIView alloc] init];
+UIView *view2 = [[UIView alloc] init];
+
+CSLayout *layout = [CSLayout layoutOfView:view2];
+
+[layout addRule:@"tt = %bt", view1];
+{% endhighlight %}
