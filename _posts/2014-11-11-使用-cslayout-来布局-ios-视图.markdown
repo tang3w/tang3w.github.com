@@ -41,7 +41,7 @@ CSLayout *contentLayout = [CSLayout layoutOfView:contentView];
 
 SLL 支持基本算术运算。SSL 一共有 5 个算术运算符：
 
-<table>
+<table class="normal">
 <thead>
 <tr>
 <th>算术运算符</th>
@@ -93,7 +93,7 @@ SLL 支持基本算术运算。SSL 一共有 5 个算术运算符：
 
 CSLayout 的约束使用 SLL 语言来描述。在 SLL 的赋值语句中，左值表示约束名。CSLayout 支持以下 14 种约束：
 
-<table>
+<table class="normal">
 <thead>
 <tr>
 <th width="20%">约束名</th>
@@ -194,7 +194,7 @@ CSLayout 的约束使用 SLL 语言来描述。在 SLL 的赋值语句中，左�
 
 赋值语句的右值就是约束值，CSLayout 支持 4 种类型的约束值：
 
-<table>
+<table class="normal">
 <thead>
 <tr>
 <th width="20%">约束值</th>
@@ -233,7 +233,7 @@ CSLayout 的约束使用 SLL 语言来描述。在 SLL 的赋值语句中，左�
 
 格式说明符用来指定外部传入的对象。下表列出了 CSLayout 支持的 13 种格式化字符串：
 
-<table>
+<table class="normal">
 <thead>
 <tr>
 <th width="20%">格式说明符</th>
@@ -324,11 +324,15 @@ CSLayout 的约束使用 SLL 语言来描述。在 SLL 的赋值语句中，左�
 </tbody>
 </table>
 
-前 12 个格式说明符指定其他视图某个方向上的尺寸，它们将在约束被求解时动态计算大小。格式说明符也同时建立了视图对其他视图的**依赖关系**。最后一个格式说明符指定一个浮点数，它建立了对父视图的隐式依赖关系。
+前 12 个格式说明符指定其他视图某个方向上的尺寸，它们将在约束被求解时动态计算大小。最后一个格式说明符指定一个浮点数。
+
+#### 依赖关系
+
+CSLayout 在设置约束时，也会同时建立视图之间的依赖关系。依赖关系反应了视图布局的求解顺序。如果视图 `A` 依赖于视图 `B`，那么 `B` 的布局比 `A` 的布局先计算。
 
 在 CSLayout 内部，依赖关系是通过有向无环图（DAG）表示的。所以，**CSLayout 不支持视图之间的相互依赖**。所以下面的例子将会引发异常：
 
-{% highlight objective-c %}
+{% highlight objective-c linenos=table %}
 UIView *view1 = [[UIView alloc] init];
 UIView *view2 = [[UIView alloc] init];
 
@@ -342,3 +346,5 @@ CSLayout *layout2 = [CSLayout layoutOfView:view2];
 
 [self.view addSubview:contentView];
 {% endhighlight %}
+
+以上代码有两处地方会引发循环依赖异常。在第 7 行，`view1` 的布局规则中引用了 `view2`，因此，`view1` 依赖于 `view2`。而在第 8 行，`view2` 的布局规则中反过来引用了 `view1`，这样，`view2` 依赖于 `view1`。就出现了依赖循环。在第 10 行，`view1` 的布局规则中引用了 `view1` 自身，也会导致依赖循环。
