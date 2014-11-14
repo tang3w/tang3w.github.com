@@ -1,12 +1,12 @@
 ---
 layout: post
 title: "使用 CSLayout 来布局 iOS 视图"
-published: false
+published: true
 ---
 
 ### 介绍
 
-CSLayout 是一个用来快速实现 iOS 视图动态布局的库。和 Auto Layout 一样，它使用基于约束的模型来构建布局。它不是 Auto Layout 的替代品，因为它不处理约束之间相互依赖的情况，除此之外，它可以轻松地处理几乎所有布局。相对于 Auto Layout，CSLayout 具有更高的效率，以及更友好的接口。
+[CSLayout][1] 是一个用来快速实现 iOS 视图**动态布局**的库。和 Auto Layout 一样，它使用基于约束的模型来构建布局。相对于 Auto Layout，CSLayout 具有更高的效率，以及更友好的接口。
 
 CSLayout 是对视图自身布局的抽象，布局由一系列规则组成，规则通过 SLL (Simple Layout Language) 语言来描述。下面是一个简单的例子：
 
@@ -24,10 +24,12 @@ CSLayout *contentLayout = [CSLayout layoutOfView:contentView];
 
 1. `tt`，顶部到父视图顶部的距离为 `20`；
 2. `ll`，左侧至父视图左侧的距离为 `10`；
-3. `bb`，右侧至父视图右侧的距离为 `10`；
-4. `rr`，底部至父视图底部的距离为 `10`。
+3. `bb`，底部至父视图底部的距离为 `10`；
+4. `rr`，右侧至父视图右侧的距离为 `10`。
 
-这个例子为视图 `contentView` 的布局创建了 4 个约束。当父视图需要重新布局时（例如添加了子视图，或者尺寸发生了变化），`contentView` 也会根据自身布局的约束动态地改变尺寸。
+这个例子为视图 `contentView` 的布局创建了 4 个约束。当父视图需要更新布局时，`contentView` 也会根据自身布局的约束动态地改变尺寸。
+
+通常不需要手动要求父视图更新布局，因为系统会很好的处理。比如当有子视图添加，自身或子视图的尺寸发生改变时，系统就会更新子视图的布局。也可以手动调用 `layoutSubviews` 方法要求父视图及时更新布局。
 
 ### SLL 语言
 
@@ -89,9 +91,9 @@ SLL 支持基本算术运算。SSL 一共有 5 个算术运算符：
 
 以上就是 SLL 语言的全部语法，非常简单。
 
-### 约束
+### 规则和约束
 
-CSLayout 的约束使用 SLL 语言来描述。在 SLL 的赋值语句中，左值表示约束名。CSLayout 支持以下 14 种约束：
+CSLayout 的规则使用 SLL 语言来描述，每个规则都包含若干个约束。在 SLL 的赋值语句中，左值表示约束名。CSLayout 支持以下 14 种约束：
 
 <table class="normal">
 <thead>
@@ -342,7 +344,7 @@ CSLayout *layout2 = [CSLayout layoutOfView:view2];
 [layout1 addRule:@"rl = %ll", view2];
 [layout2 addRule:@"ll = %rl", view1]; // Error
 
-[layout1 addRule:@"rl = %ll + 50", view1];  // Error
+[layout1 addRule:@"rl = %ll + 50", view1]; // Error
 
 [self.view addSubview:contentView];
 {% endhighlight %}
@@ -371,7 +373,24 @@ CSLayout *layout = [CSLayout layoutOfView:view];
 UIView *view1 = [[UIView alloc] init];
 UIView *view2 = [[UIView alloc] init];
 
-CSLayout *layout = [CSLayout layoutOfView:view2];
+CSLayout *layout = [CSLayout layoutOfView:view1];
 
-[layout addRule:@"tt = %bt", view1];
+[layout addRule:@"tt = %bt + 10", view2];
 {% endhighlight %}
+
+最后举一个稍微复杂的例子，这个例子将 `view1` 左侧、底部、和右侧的距离设置为 10，顶部距离 `view2` 的底部距离为 10。
+
+{% highlight objective-c %}
+UIView *view1 = [[UIView alloc] init];
+UIView *view2 = [[UIView alloc] init];
+
+CSLayout *layout = [CSLayout layoutOfView:view1];
+
+[layout addRule:@"ll = bb = rr = %f, tt = %bt + 10", 10.0f, view2];
+{% endhighlight %}
+
+### 总结
+
+CSLayout 是一个针对 iOS 视图布局的轻量实现。它不是 Auto Layout 的替代品，因为它不处理约束之间相互依赖的情况，除此之外，它可以轻松地处理几乎所有布局。
+
+[1]: https://github.com/tang3w/CocoaSugar
