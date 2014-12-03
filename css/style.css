@@ -532,22 +532,25 @@ span.translate {
 	text-shadow:0 1px 0 rgba(0,0,0,0.3)
 }
 
-table.normal {
-  width: 100%;
-}
+table.highlighttable td { background: transparent; }
+table td { background: white; }
 
-table.normal td,
-table.normal th { 
+table.highlighttable { width: auto }
+table { width: 100%; }
+
+table.highlighttable td,
+table.highlighttable th { 
+  border-bottom: none;
+  padding: auto;
+}
+table td,
+table th { 
   border-bottom: 1px #cccccc solid;
   padding: 3px 0;
 }
 
-table.normal th {
+table th {
   border-width: 3px;
   font-weight: bold;
   font-size: 18px;
-}
-
-table.normal td {
-  background: white;
 }

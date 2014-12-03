@@ -43,7 +43,7 @@ CSLayout *contentLayout = [CSLayout layoutOfView:contentView];
 
 SLL 支持基本算术运算。SSL 一共有 5 个算术运算符：
 
-<table class="normal">
+<table>
 <thead>
 <tr>
 <th>算术运算符</th>
@@ -95,7 +95,7 @@ SLL 支持基本算术运算。SSL 一共有 5 个算术运算符：
 
 CSLayout 的规则使用 SLL 语言来描述，每个规则都包含若干个约束。在 SLL 的赋值语句中，左值表示约束名。CSLayout 支持以下 14 种约束：
 
-<table class="normal">
+<table>
 <thead>
 <tr>
 <th width="20%">约束名</th>
@@ -196,7 +196,7 @@ CSLayout 的规则使用 SLL 语言来描述，每个规则都包含若干个约
 
 赋值语句的右值就是约束值，CSLayout 支持 4 种类型的约束值：
 
-<table class="normal">
+<table>
 <thead>
 <tr>
 <th width="20%">约束值</th>
@@ -235,7 +235,7 @@ CSLayout 的规则使用 SLL 语言来描述，每个规则都包含若干个约
 
 格式说明符用来指定外部传入的对象。下表列出了 CSLayout 支持的 13 种格式化字符串：
 
-<table class="normal">
+<table>
 <thead>
 <tr>
 <th width="20%">格式说明符</th>
