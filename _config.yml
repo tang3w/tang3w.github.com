@@ -1,4 +1,6 @@
-markdown: rdiscount
+markdown: redcarpet
+redcarpet:
+    extensions: ["no_intra_emphasis", "tables"]
 highlighter: pygments
 
 title: 言无不尽
