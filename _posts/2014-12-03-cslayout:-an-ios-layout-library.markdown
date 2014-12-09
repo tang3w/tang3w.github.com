@@ -6,7 +6,7 @@ published: true
 
 ### Introduction
 
-`CSLayout` is yet another layout library. It's neither a wrapper nor a replacement for Auto Layout. It dose not handle circular references of constraints and constraint priority. Besides that, `CSLayout` can solve all layout cases. What's more, `CSLayout` provides some additional benefits: smaller memory footprint, better performance and more intuitive expression.
+[CSLayout][1] is yet another layout library. It's neither a wrapper nor a replacement for Auto Layout. It dose not handle circular references of constraints and constraint priority. Besides that, `CSLayout` can solve all layout cases. What's more, `CSLayout` provides some additional benefits: smaller memory footprint, better performance and more intuitive expression.
 
 `CSLayout` is an abstraction of layout of view. With `CSLayout`, you can specify view's layout relative to it's superview, sibling views and non-sibling views. Following example specifies a 10-points constraint from view's bottom to superview's bottom:
 
@@ -107,3 +107,5 @@ CSLayout *layout = [CSLayout layoutOfView:view];
 
 [layout addRule:@"ll = bb = rr = 10, tt = 50%"];
 ```
+
+[1]: https://github.com/tang3w/CocoaSugar
