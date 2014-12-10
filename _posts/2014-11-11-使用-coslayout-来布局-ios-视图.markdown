@@ -1,26 +1,26 @@
 ---
 layout: post
-title: "使用 CSLayout 来布局 iOS 视图"
+title: "使用 COSLayout 来布局 iOS 视图"
 published: true
 ---
 
 ### 介绍
 
-[CSLayout][1] 是一个用来快速实现 iOS 视图**动态布局**的库。和 Auto Layout 一样，它使用基于约束的模型来构建布局。相对于 Auto Layout，CSLayout 具有更高的效率，以及更友好的接口。
+[COSLayout][1] 是一个用来快速实现 iOS 视图**动态布局**的库。和 Auto Layout 一样，它使用基于约束的模型来构建布局。相对于 Auto Layout，COSLayout 具有更高的效率，以及更友好的接口。
 
-CSLayout 是对视图自身布局的抽象，布局由一系列规则组成，规则通过 SLL (Simple Layout Language) 语言来描述。下面是一个简单的例子：
+COSLayout 是对视图自身布局的抽象，布局由一系列规则组成，规则通过 SLL (Simple Layout Language) 语言来描述。下面是一个简单的例子：
 
 {% highlight objective-c %}
 UIView *contentView = [[UIView alloc] init];
 
-CSLayout *contentLayout = [CSLayout layoutOfView:contentView];
+COSLayout *contentLayout = [COSLayout layoutOfView:contentView];
 
 [contentLayout addRule:@"tt = 20, ll =  bb = rr = 10"];
 //                                  ^--------- SLL (Simple Layout Language)
 [self.view addSubview:contentView];
 {% endhighlight %}
 
-以上代码首先为视图 `contentView` 创建了一个 `CSLayout` 对象 `contentLayout`，接着使用 `addRule:` 方法为这个对象添加了一条规则，该规则包含 4 个约束，它们分别是：
+以上代码首先为视图 `contentView` 创建了一个 `COSLayout` 对象 `contentLayout`，接着使用 `addRule:` 方法为这个对象添加了一条规则，该规则包含 4 个约束，它们分别是：
 
 1. `tt`，顶部到父视图顶部的距离为 `20`；
 2. `ll`，左侧至父视图左侧的距离为 `10`；
@@ -93,7 +93,7 @@ SLL 支持基本算术运算。SSL 一共有 5 个算术运算符：
 
 ### 规则和约束
 
-CSLayout 的规则使用 SLL 语言来描述，每个规则都包含若干个约束。在 SLL 的赋值语句中，左值表示约束名。CSLayout 支持以下 14 种约束：
+COSLayout 的规则使用 SLL 语言来描述，每个规则都包含若干个约束。在 SLL 的赋值语句中，左值表示约束名。COSLayout 支持以下 14 种约束：
 
 <table>
 <thead>
@@ -194,7 +194,7 @@ CSLayout 的规则使用 SLL 语言来描述，每个规则都包含若干个约
 
 所有约束可以从方向上分为两类：**水平约束**和**垂直约束**。这样分类是有意义的，因为某些约束值会根据所属约束方向的不同有不同的解释，比如后面马上要介绍的百分数就是这样。判断某个约束是哪个方向非常简单，仅从字面上就可以判断。例如 `ll` 表示左侧至父视图左侧的约束，当然是水平约束；再如 `minh`，它表示最小高度，当然是一个垂直约束。
 
-赋值语句的右值就是约束值，CSLayout 支持 4 种类型的约束值：
+赋值语句的右值就是约束值，COSLayout 支持 4 种类型的约束值：
 
 <table>
 <thead>
@@ -233,7 +233,7 @@ CSLayout 的规则使用 SLL 语言来描述，每个规则都包含若干个约
 </tbody>
 </table>
 
-格式说明符用来指定外部传入的对象。下表列出了 CSLayout 支持的 13 种格式化字符串：
+格式说明符用来指定外部传入的对象。下表列出了 COSLayout 支持的 13 种格式化字符串：
 
 <table>
 <thead>
@@ -330,16 +330,16 @@ CSLayout 的规则使用 SLL 语言来描述，每个规则都包含若干个约
 
 #### 依赖关系
 
-CSLayout 在设置约束时，也会同时建立视图之间的依赖关系。依赖关系决定了视图布局的求解顺序。如果视图 `A` 依赖于视图 `B`，那么 `B` 的布局比 `A` 的布局先计算。
+COSLayout 在设置约束时，也会同时建立视图之间的依赖关系。依赖关系决定了视图布局的求解顺序。如果视图 `A` 依赖于视图 `B`，那么 `B` 的布局比 `A` 的布局先计算。
 
-在 CSLayout 内部，依赖关系是通过有向无环图（DAG）表示的。所以，**CSLayout 不支持视图之间的相互依赖**。所以下面的例子将会引发异常：
+在 COSLayout 内部，依赖关系是通过有向无环图（DAG）表示的。所以，**COSLayout 不支持视图之间的相互依赖**。所以下面的例子将会引发异常：
 
 {% highlight objective-c linenos=table %}
 UIView *view1 = [[UIView alloc] init];
 UIView *view2 = [[UIView alloc] init];
 
-CSLayout *layout1 = [CSLayout layoutOfView:view1];
-CSLayout *layout2 = [CSLayout layoutOfView:view2];
+COSLayout *layout1 = [COSLayout layoutOfView:view1];
+COSLayout *layout2 = [COSLayout layoutOfView:view2];
 
 [layout1 addRule:@"rl = %ll", view2];
 [layout2 addRule:@"ll = %rl", view1]; // Error
@@ -353,7 +353,7 @@ CSLayout *layout2 = [CSLayout layoutOfView:view2];
 
 通过依赖关系来决定布局计算顺序的决定是基于实现的复杂度和性能考虑的。正是由于这种轻量的实现，它的效率会比 Auto Layout 高，因为它不会对多个约束进行多项式求解，仅仅是拓扑排序的复杂度。
 
-尽管存在这种限制，CSLayout 足以应付绝大多数布局问题。下一节将介绍 CSLayout 的综合运用。
+尽管存在这种限制，COSLayout 足以应付绝大多数布局问题。下一节将介绍 COSLayout 的综合运用。
 
 ### 综合运用
 
@@ -362,7 +362,7 @@ CSLayout *layout2 = [CSLayout layoutOfView:view2];
 {% highlight objective-c %}
 UIView *view = [[UIView alloc] init];
 
-CSLayout *layout = [CSLayout layoutOfView:view];
+COSLayout *layout = [COSLayout layoutOfView:view];
 
 [layout addRule:@"rr = 10"];
 {% endhighlight %}
@@ -373,7 +373,7 @@ CSLayout *layout = [CSLayout layoutOfView:view];
 UIView *view1 = [[UIView alloc] init];
 UIView *view2 = [[UIView alloc] init];
 
-CSLayout *layout = [CSLayout layoutOfView:view1];
+COSLayout *layout = [COSLayout layoutOfView:view1];
 
 [layout addRule:@"tt = %bt + 10", view2];
 {% endhighlight %}
@@ -384,13 +384,13 @@ CSLayout *layout = [CSLayout layoutOfView:view1];
 UIView *view1 = [[UIView alloc] init];
 UIView *view2 = [[UIView alloc] init];
 
-CSLayout *layout = [CSLayout layoutOfView:view1];
+COSLayout *layout = [COSLayout layoutOfView:view1];
 
 [layout addRule:@"ll = bb = rr = %f, tt = %bt + 10", 10.0f, view2];
 {% endhighlight %}
 
 ### 总结
 
-CSLayout 是一个针对 iOS 视图布局的轻量实现。它不是 Auto Layout 的替代品，因为它不处理约束之间相互依赖的情况，除此之外，它可以轻松地处理几乎所有布局。
+COSLayout 是一个针对 iOS 视图布局的轻量实现。它不是 Auto Layout 的替代品，因为它不处理约束之间相互依赖的情况，除此之外，它可以轻松地处理几乎所有布局。
 
 [1]: https://github.com/tang3w/CocoaSugar
