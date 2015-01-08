@@ -1,0 +1,66 @@
+div#toolbar {
+  margin-left: -2px;
+  margin-bottom: 20px;
+}
+
+table#qv,
+table.qv-disable {
+  background-color: #f1f1f1;
+  border: 1px #bdc3c7 solid;
+  border-spacing: 2px;
+  border-collapse: separate;
+  line-height: 125%;
+
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+table#qv td,
+table.qv-disable td {
+  background-color: white;
+  border: 1px #bdc3c7 solid;
+  text-align: center;
+}
+
+table#qv td.highlight {
+  background-color: #2980b9;
+  color: #ffffff;
+}
+
+button {
+  position: relative;
+  display: inline-block;
+  padding: 0.5em 0.75em;
+  margin: 0 5px 7px 0;
+  -webkit-transition: border-color .218s;
+  -moz-transition: border .218s;
+  -o-transition: border-color .218s;
+  transition: border-color .218s;
+  background: #f3f3f3;
+  background: -webkit-gradient(linear,0% 40%,0% 70%,from(#f5f5f5),to(#f1f1f1));
+  background: -moz-linear-gradient(linear,0% 40%,0% 70%,from(#f5f5f5),to(#f1f1f1));
+  border: solid 1px #dcdcdc;
+  border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  font: bold 0.75em Helvetica, Arial, sans-serif;
+  text-shadow: 0 1px 0 #ffffff;
+  text-decoration: none;
+  color: #6e6e6e;
+}
+
+button:hover {
+  -moz-box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2); 
+  -webkit-box-shadow:0 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  border-color: #c6c6c6;
+}
+
+button:active {
+  border-color: #999999;
+  color: #333333;
+}

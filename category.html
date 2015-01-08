@@ -1,0 +1,41 @@
+---
+layout: index
+---
+
+{% capture JSON %} {
+  {% for cate in site.categories %}
+    {% if cate[0] != site.categories.first[0] %},{% endif %}
+    "{{ cate[0] }}": [
+      {% for post in cate[1] %}
+        {% if post != cate[1].first %},{% endif %} {
+        "title": "{{ post.title }}",
+        "date": "{{ post.date | date:"%Y-%m-%d" }}",
+        "url": "{{ post.url }}"
+        }
+      {% endfor %}
+    ]
+  {% endfor %}
+}
+{% endcapture %}
+
+<script type="text/javascript" src="/js/url.min.js"></script>
+<script type="text/javascript">
+(function(){
+  var cates = JSON.parse('{{ JSON | strip_newlines }}'),
+      posts = cates[url('?name')],
+      frags = ['<ul class="posts">'];
+
+  for (var i in posts) {
+    frags.push('<li>');
+    frags.push('<time>' + posts[i].date + '</time>')
+    frags.push('<a href="' + posts[i].url + '">' + posts[i].title + '</a>');
+    frags.push('</li>');
+  }
+
+  frags.push('</ul>');
+
+  var html = frags.join(' ');
+
+  document.write(html);
+}());
+</script>

@@ -1,0 +1,65 @@
+---
+# The necessary empty front matter
+---
+
+#body {
+  padding-top: 1.875em;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  list-style: none;
+}
+
+a {
+  color: inherit;
+}
+
+#navicon {
+  position: absolute;
+  font-size: 1.6em;
+  padding: 0.25em;
+  left: 0;
+  top: 0;
+  line-height: 1em;
+  color: #1abc9c;
+}
+
+.font-icon-menu:before {
+  position: relative;
+  top: 0.14em;
+}
+
+.posts,
+.categories {
+  position: relative;
+}
+
+.posts {
+  float: right;
+}
+
+.categories {
+  float: left;
+}
+
+.categories, #slide-menu {
+  text-transform: uppercase;
+}
+
+.categories ul {
+  padding-left: 1.25em;
+}
+
+.posts time {
+  padding-right: 1.25em;
+  color: #999999;
+}
+
+/*====== Resposive style ======*/
+
+@import "responsive";

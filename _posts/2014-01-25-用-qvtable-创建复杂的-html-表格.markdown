@@ -6,7 +6,7 @@ categories:
 - JavaScript
 ---
 
-<link rel="stylesheet" type="text/css" href="/css/QVTable.css">
+<link rel="stylesheet" type="text/css" href="/css/qvtable.css">
 <script src="//cdn.staticfile.org/jquery/1.9.1/jquery.js"></script>
 <script src="/js/QVTable.js"></script>
 
@@ -22,8 +22,7 @@ HTML 提供了 `table` 标签来创建表格。通常使用表格来表示一些
     <button id="remove">Remove</button>
     <button id="merge">Merge</button>
     <button id="sliceH">Slice In Horizontal</button>
-    <button id="sliceV">Slice In Vertical</button>
-    <br />
+    <button id="sliceV">Slice In Vertical</button><br/>
     <button id="newRowA">New Row After</button>
     <button id="newRowB">New Row Before</button>
     <button id="newColA">New Col After</button>

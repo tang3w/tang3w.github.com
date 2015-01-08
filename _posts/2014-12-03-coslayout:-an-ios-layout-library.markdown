@@ -2,9 +2,11 @@
 layout: post
 title: "COSLayout: An iOS Layout Library"
 published: true
+categories:
+- Objective-C
 ---
 
-### Introduction
+## Introduction
 
 [COSLayout][1] is yet another layout library. It's neither a wrapper nor a replacement for Auto Layout. It dose not handle circular references of constraints and constraint priority. Besides that, `COSLayout` can solve all layout cases. What's more, `COSLayout` provides some additional benefits: smaller memory footprint, better performance and more intuitive expression.
 
@@ -73,7 +75,7 @@ Format specifier | Type       | Description
 
 It is worth mentioning that, format specifier also create a dependency between two views: the layout view and the other view given by additional argument. In `COSLayout`, the dependencies is presented by DAG. So `COSLayout` do not support the circular dependencies. When superview needs layout, all layouts of subviews will solve it's constraints according to the dependencies.
 
-### Constraint value expression
+## Constraint value expression
 
 You can apply arithmetic operator between constraint values. Like other languages, SLL supports 5 basic arithmetic operators:
 
@@ -87,7 +89,7 @@ Operator name | Priority | Associativity | Code examples
 
 You can also use `()` to group sub-expression to change the evaluation order of expression.
 
-### Examples
+## Examples
 
 In the following example, `COSLayout` aligns view's top-right corner to superview's top-right corner with 5-points space.
 

@@ -3,9 +3,8 @@ layout: post
 title: "更轻量的 View Controllers"
 published: true
 categories:
-- translate
+- translation
 - Objective-C
-- objc.io
 ---
 
 <p id="state">注：这篇翻译已经过 objc.io 授权，原文链接是：<a href="http://www.objc.io/issue-1/lighter-view-controllers.html" title="Lighter View Controllers">Lighter View Controllers</a></p>
@@ -14,7 +13,7 @@ View controllers 通常是 iOS 项目中最大的文件，因为它们包含了�
 
 你可以在 Github 上获取关于这个问题的[示例项目][1]。
 
-### 把 Data Source 和其他 Protocols 分离出来
+## 把 Data Source 和其他 Protocols 分离出来
 
 把 `UITableViewDataSource` 的代码提取出来放到一个单独的类中，是为 view controller 瘦身的强大技术之一。当你多做几次，你就会发现这种模式，并且创建出可复用的类。
 
@@ -98,7 +97,7 @@ self.tableView.dataSource = photosArrayDataSource;
 
 此外，这种方法也可以扩展到其他 protocols 上面。最明显的一个就是 `UICollectionViewDataSource`。这给了你极大的灵活性；如果，在开发的某个时候，你想用 `UICollectionView` 代替 `UITableView`，你几乎不需要对 view controller 作任何修改。你甚至可以让你的 data source 同时支持这两个协议。
 
-### 将业务逻辑移到 Model 中
+## 将业务逻辑移到 Model 中
 
 下面是 view controller（来自其他项目）中的示例代码，用来查找一个用户的目前的优先事项的列表：
 
@@ -139,7 +138,7 @@ self.tableView.dataSource = photosArrayDataSource;
 
 有些代码不能被轻松地移动到 model 对象中，但明显和 model 代码紧密联系，对于这种情况，我们可以使用一个 `Store`：
 
-### 创建 Store 类
+## 创建 Store 类
 
 在我们第一版的示例程序的中，有些代码去加载文件并解析它。下面就是 view controller 中的代码：
 
@@ -163,11 +162,11 @@ self.tableView.dataSource = photosArrayDataSource;
 
 但是 view controller 没必要知道这些，所以我们创建了一个 Store 对象来做这些事。通过分离，我们就可以复用这些代码，单独测试他们，并且让 view controller 保持小巧。Store 对象会关心数据加载、缓存和设置数据栈。它也经常被称为 *service layer* 或 *repository*。
 
-### 把网络请求逻辑移到 Model 层
+## 把网络请求逻辑移到 Model 层
 
 和上面的主题相似：不要在 view controller 中做网络请求的逻辑。取而代之，你应该将它们封装到另一个类中，在这个类中通过回调（比如一个 completion block）来调用 view controller 中的方法。这样的好处是，缓存和错误控制也可以在这个类里面做。
 
-### 把 View 代码移到 View 层
+## 把 View 代码移到 View 层
 
 不应该在 view controller 中构建复杂的 view 层次结构。你可以使用 interface builder 或者把 views 封装到一个 `UIView` 子类当中。例如，如果你要创建一个 date picker 控件，把它放到一个名为 `DatePickerView` 的类中会比把所有的事情都在 view controller 中做会更有意义。这样又增加了可复用性和简单性。
 
@@ -177,7 +176,7 @@ self.tableView.dataSource = photosArrayDataSource;
 
 就像你看到的那样，我们在 view（我们没有在这个 nib 上使用 File's Owner 对象）上面创建了 properties，然后连接到指定的 subviews。这种技术同样适用于其他自定义的 views。
 
-### 消息传递
+## 消息传递
 
 其他在 view controllers 中经常发生的事是与其他 view controllers，model，和 views 之间进行消息传递。这当然是 controller 应该做的，但我们要尽可能地减少代码。
 
@@ -185,11 +184,11 @@ self.tableView.dataSource = photosArrayDataSource;
 
 当一个 view controller 想把某个状态传递给多个其他 view controllers 时，就会出现这样的问题。较好的做法是把状态放到一个单独的对象里，然后把这个对象传递给其它 view controllers，它们观察和修改这个状态。这样的好处是消息传递都在一个地方（被观察的对象）。但是当有嵌套的 delegate 回调时，问题还没完，这是个复杂的话题，我们可能在未来用一个完整的话题来讨论。
 
-### 总结
+## 总结
 
 我们已经看到用来创建更小巧的 view controllers 的技术。我们并不是想把这些技术应用到每一个角落，只是我们有一个目标：写可维护的代码。知道这些模式后，我们就更有可能把那些笨重的 view controllers 变得更整洁。
 
-### 扩展阅读
+## 扩展阅读
 
 - [View Controller Programming Guide for iOS][4]
 - [Cocoa Core Competencies: Controller Object][5]

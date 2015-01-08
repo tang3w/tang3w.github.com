@@ -1,9 +1,0 @@
----
-layout: post
-title: "Ruby 中的单例类"
-published: false
-categories:
-- ruby
----
-
-

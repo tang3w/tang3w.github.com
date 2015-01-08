@@ -3,20 +3,19 @@ layout: post
 title: "整理 Table View 的代码"
 published: true
 categories:
-- translate
+- translation
 - Objective-C
-- objc.io
 ---
 
 <p id="state">注：这篇翻译已经过 objc.io 授权，原文链接是：<a href="http://www.objc.io/issue-1/table-views.html" title="Clean table view code">Clean table view code</a></p>
 
 Table view 是 iOS 应用程序中非常通用的组件。所以许多代码和 table view 都有直接或间接的关系，包括提供数据、更新 table view，控制它的行为以及响应选择事件，仅举这几个例子。在这篇文章中，我们将会展示保持代码整洁和组织良好的技术。
 
-### UITableViewController vs. UIViewController
+## UITableViewController vs. UIViewController
 
 Apple 提供了 `UITableViewController` 作为 table views 专属的 view controller 类。Table view controllers 实现了一些非常有用的特性来帮你避免一遍又一遍地写那些死板的代码！但是话又说回来，table view controller 只限于管理一个全屏展示的 table view。大多数情况下，这就是你想要的，但如果不是，还有其他方法来解决这个问题，就像下面我们展示的那样。
 
-#### Table View Controllers 的特性
+### Table View Controllers 的特性
 
 Table view controllers 会在第一次显示 table view 的时候帮你加载其数据。特别地，他还会帮你切换 table view 的编辑模式、响应键盘通知、以及一些小任务，比如闪现 scroll indicator 和消除选择。为了让这些特性生效，当你在子类中覆写事件方法时，需要调用 super。
 
@@ -24,7 +23,7 @@ Table view controllers 相对于标准 view controllers 的唯一卖点就是它
 
 这些元素提供了 Apple 为 table view 定义的大多数交互行为，如果你的应用恰好符合这些特性，那么坚持使用 table view controllers 来避免写那些死板的代码是个很好的方法。
 
-#### Table View Controllers 的限制
+### Table View Controllers 的限制
 
 Table view controllers 的 view 属性永远都是一个 table view。如果你稍后决定在 table view 旁边显示一些东西（比如一个地图），如果不依赖于那些奇怪的 hacks，你就不会那么走运了。
 
@@ -34,7 +33,7 @@ Table view controllers 的 view 属性永远都是一个 table view。如果你�
 
 在选择条路之前，你还有一个更轻松的选择，它有**分离关注点 ( separating concerns ) **的额外好处：
 
-#### Child View Controllers
+### Child View Controllers
 
 和完全抛弃 table view controller 不同，你还可以将它作为 child view controller 添加到其他 view controller 中（看[关于此问题的文章][2]）。然后 table view controller 继续管理它的 table view，如果需要，parent view controller 可以关心其他的界面元素。
 
@@ -80,13 +79,13 @@ Table view controllers 的 view 属性永远都是一个 table view。如果你�
 
 就像你看到的那样，这种结构为 view controller 之间的消息传递带来了额外的开销，但是作为回报，获得了清晰的关注点分离和更好的可复用性。根据实际情况来看，这既没有让事情变得更简单，也没有更复杂，请读者自行斟酌。
 
-### 分离关注点（Separating Concerns）
+## 分离关注点（Separating Concerns）
 
 当处理 table views 的时候，有许多各种各样的任务，这些任务穿梭于 models，controllers 和 views 之间。为了避免让 view controllers 做所有的事，我们将尽可能地把这些任务划分到合适的地方，这样有利于阅读、维护和测试。
 
 这里描述的技术是文章[更轻量的 View Controllers][3] 中的概念的延伸，请参考这篇文章来理解如何重构 data source 和 model 的逻辑。结合 table views，我们来具体看看如何在 view controllers 和 views 之间分离关注点。
 
-#### 搭建 Model 对象和 Cells 之间的桥梁
+### 搭建 Model 对象和 Cells 之间的桥梁
 
 有时我们需要处理在 view layer 中显示的数据。由于我们同时也希望让 model 和 view 之间明确分离，所以通常把这个任务转移到 table view 的 data source 中去做。
 
@@ -145,11 +144,11 @@ TableViewCellConfigureBlock block = ^(PhotoCell *cell, Photo *photo) {
 
 {% endhighlight %}
 
-#### 让 Cells 可复用
+### 让 Cells 可复用
 
 有时多种 model 对象需要用同一类型的 cell 来表示，这种情况下，我们可以进一步让 cell 可以复用。首先，我们给 cell 定义一个 protocol，需要用这个 cell 显示的对象必须遵循这个 protocol。然后简单修改 category 中的设置方法，让它可以接受遵循这个 protocol 的任何对象。这些简单的步骤让 cell 和任何特殊的 model 对象之间得以解耦，让它可适应不同的数据类型。
 
-#### 在 Cell 内部控制 Cell 的状态
+### 在 Cell 内部控制 Cell 的状态
 
 如果你想自定义 table views 默认的高亮或选择行为，你可以实现两个 delegate 方法，把点击的 cell 修改成我们想要的样子。例如：
 
@@ -194,7 +193,7 @@ TableViewCellConfigureBlock block = ^(PhotoCell *cell, Photo *photo) {
 
 总的来说，我们在努力把 view layer 和 controller layer 的实现细节分离开。delegate 肯定得清楚一个 view 该显示什么状态，但是它不应该了解如何修改 view tree 或者给 subviews 设置哪些属性以获得正确的状态。所有这些逻辑都应该封装到 view 内部，然后给外部提供一个简单地 API。
 
-#### 控制多个 Cell 类型
+### 控制多个 Cell 类型
 
 如果一个 table view 里面有多种类型的 cell，data source 方法很快就难以控制了。在我们示例程序中，photo details table 有两种不同类型的 cell：一个用于显示几个星，另一个用来显示一个键值对。为了划分处理不同 cell 类型的代码，data source 方法简单地通过判断 cell 的类型，把任务派发给其他指定的方法。
 
@@ -228,19 +227,19 @@ TableViewCellConfigureBlock block = ^(PhotoCell *cell, Photo *photo) {
 
 {% endhighlight %}
 
-#### 编辑 Table View
+### 编辑 Table View
 
 Table view 提供了易于使用的编辑特性，允许你对 cell 进行删除或重新排序。这些事件，都可以让 table view 的 data source 通过 [delegate 方法][5]得到通知。因此，通常我们能在这些 delegate 方法中看到对数据的进行修改的操作。
 
 修改数据很明显是属于 model layer 的任务。Model 应该为诸如删除或重新排序等操作暴露一个 API，然后我们可以在 data source 方法中调用它。这样，controller 就可以扮演 view 和 model 之间的**协调者 ( coordinator ) **，而不需要知道 model 层的实现细节。并且还有额外的好处，model 的逻辑也变得更容易测试，因为它不再和 view controllers 的任务混杂在一起了。
 
-### 总结
+## 总结
 
 Table view controllers（以及其他的 controller 对象！）应该在 model 和 view 对象之间扮演[协调者和调解者的角色][2]。它不应该关心明显属于 view layer 或 model layer 的任务。你应该始终记住这点，这样 delegate 和 data source 方法会变得更小巧，最多包含一些简单地样板代码。
 
 这不仅减少了 table view controllers 那样的大小和复杂性，而且还把业务逻辑和 view 的逻辑放到了更合适的地方。Controller layer 的里里外外的实现细节都被封装成了简单地 API，最终，它变得更加容易理解，也更利于团队协作。
 
-### 扩展阅读
+## 扩展阅读
 
 - [Blog: Skinnier Controllers using View Categories][6]
 - [Table View Programming Guide][7]

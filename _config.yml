@@ -1,8 +1,12 @@
-markdown: redcarpet
-redcarpet:
-    extensions: ["no_intra_emphasis", "tables"]
-highlighter: pygments
-
-title: 言无不尽
+# Site settings
+title: Tianyong Tang
+description: I blog just for fun.
+url: "http://tang3w.com"
 google_analytics: UA-34425969-1
 disqus_shortname: tang3w
+
+# Build settings
+markdown: redcarpet
+redcarpet:
+  extensions: ["no_intra_emphasis", "tables"]
+highlighter: pygments

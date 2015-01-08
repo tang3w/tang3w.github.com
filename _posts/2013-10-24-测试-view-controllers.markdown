@@ -3,16 +3,15 @@ layout: post
 title: "测试 View Controllers"
 published: true
 categories:
-- translate
+- translation
 - Objective-C
-- objc.io
 ---
 
 <p id="state">注：这篇翻译已经过 objc.io 授权，原文链接是：<a href="http://www.objc.io/issue-1/testing-view-controllers.html" title="Testing View Controllers">Testing View Controllers</a></p>
 
 我们不是信奉测试，但它应该帮助我们加快开发进度，并且让事情变得更有趣。
 
-### 让事情保持简单
+## 让事情保持简单
 
 测试简单的事情很简单，同样，测试复杂的事会很复杂。就像我们在其他文章中指出的那样，让事情保持简单小巧总是好的。除此之外，它还有利于我们测试。这是件双赢的事。让我们来看看[测试驱动开发][1]（简称 TDD），有些人喜欢它，有些人则不喜欢。我们在这里不深入讨论，只是如果用 TDD，你得在写代码之前先写好测试。如果有什么疑问，可以去看看 Wikipedia 上的文章。同时，我们也认为重构和测试可以很好地结合在一起。
 
@@ -22,7 +21,7 @@ categories:
 
 记住：测试越多，回报的增长趋势越慢。首先你应该做简单的测试。当你觉得满意时，再加入更多复杂的测试。
 
-### Mocking
+## Mocking
 
 当你把一个整体拆分成小零件（即更小的类）时，我们可以在每个类中进行测试。但由于我们测试的类会和其他类交互，这里我们用一个所谓的 `mock` 或 `stub` 来绕开它。把 `mock` 对象看成是一个占位符，我们测试的类会跟这个占位符交互，而不是真正的那个对象。这样，我们就可以针对性地测试，并且保证不依赖于应用程序的其他部分。
 
@@ -32,7 +31,7 @@ Objective-C 中有个用来 mocking 的强大工具叫做 [OCMock][3]。它是�
 
 本文后面有 data source 测试的例子，它更加详细地展示了这些技术如何工作在一起。
 
-### SenTestKit
+## SenTestKit
 
 我们将要使用的另一个工具是一个测试框架，开发者工具的一部分：[Sente][4] 的 SenTestingKit。这个上古神器从 1997 年起就伴随在 Objective-C 开发者左右，比第一款 iPhone 发布还早 10 年。现在，它已经集成到 Xcode 中了。SenTestingKit 会运行你的测试。通过 SenTestingKit，你将测试组织在类中。你需要给每一个你想测试的类创建一个测试类，类名以 `Testing` 结尾，它反应了这个类是干什么的。
 
@@ -40,7 +39,7 @@ Objective-C 中有个用来 mocking 的强大工具叫做 [OCMock][3]。它是�
 
 做测试时，为测试类创建基类是个不错的模式。把通用的逻辑放到基类里面，可以让测试更简单和集中。可以通过[示例程序][5]中的例子来看看这样带来的好处。我们没有使用 Xcode 的测试模板，为了让事情简单有效，我们只创建了单独的 `.m` 文件。通过把类名改成以 `Tests` 结尾，类名可以反映出我们在对什么做测试。
 
-### 与 Xcode 集成
+## 与 Xcode 集成
 
 测试会被 build 成一个 bundle，其中包含一个动态库和你选择的资源文件。如果你要测试某些资源文件，你得把它们加到测试的 target 中，Xcode 就会将它们打包到一个 bundle 中。接着你可以通过 NSBundle 来定位这些资源文件，示例项目实现了一个 `-URLForResource:withExtension:` 方法来方便的使用它。
 
@@ -79,7 +78,7 @@ static BOOL isRunningTests(void)
 
 还要记住你可以为测试代码下断点，当测试执行时，调试器会在断点处停下来。
 
-### 测试 Data Source
+## 测试 Data Source
 
 好了，让我们开始吧。我们已经通过拆分 view controller 让测试工作变得更轻松了。现在我们要测试 `ArrayDataSource`。首先我们新建一个空的，基本的测试类。我们把接口和实现都放到一个文件里；也没有哪个地方需要包含 `@interface`，放到一个文件会显得更加漂亮和整洁。
 
@@ -101,7 +100,7 @@ static BOOL isRunningTests(void)
 
 这个类没做什么事，只是展示了基本的设置。当我们运行这个测试时，`-testNothing` 方法将会运行。特别地，`STAssert` 宏将会做琐碎的检查。注意，前缀 `ST` 源自于 `SenTestingKit`。这些宏和 Xcode 集成，会把失败显示到 *Issues navigator* 中。
 
-### 第一个测试
+## 第一个测试
 
 我们现在把 `testNothing` 替换成一个简单、真正的测试：
 
@@ -119,7 +118,7 @@ static BOOL isRunningTests(void)
 
 {% endhighlight objective-c %}
 
-### 实践 Mocking
+## 实践 Mocking
 
 接着，我们想测试 `ArrayDataSource` 实现的方法：
 
@@ -213,7 +212,7 @@ id mockTableView = [self autoVerifiedMockForClass:[UITableView class]];
 
 这是我们测试基类中的一个方便的封装，它会在测试最后自动调用 `-verify` 方法。
 
-### 测试 UITableViewController
+## 测试 UITableViewController
 
 下面，我们转向 PhotosViewController。它是个 `UITableViewController` 的子类，它使用了我们刚才测试过的 data source。View controller 剩下的代码已经相当简单了。
 
@@ -286,7 +285,7 @@ NSIndexPath* indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
 
 于是，我们不需要记住调用 `-verify`。
 
-### 进一步探索
+## 进一步探索
 
 就像你从上面看到的那样，*partial mocking* 非常强大。如果你看看 `-[PhotosViewController setupTableView]` 方法的源码，你就会看到它是如何从 app delegate 中取出 model 对象的。
 
@@ -309,11 +308,11 @@ id appDelegateMock = [OCMockObject partialMockForObject:appDelegate];
 
 现在，无论 `[AppDelegate sharedDelegate].store` 时候调用过，它也会返回 `storeMock`。可以把它发挥到极致。确保让你的测试尽可能保持简单，除非确实有复杂的需要。
 
-### 牢记的事
+## 牢记的事
 
 Partial mocks 会修改 mocking 的对象，并且在 mocks 的生存期一直有效。你可以通过提前调用 `[aMock stopMocking]` 来停止这种行为。大多数时候，你希望 partial mock 在整个测试期间都保持有效。确保在测试方法最后放置 `[aMock verify]`。否则 ARC 会过早 dealloc 这个 mock。而且不管怎样，你都希望加上 `-verify`。
 
-### 测试 NIB 加载
+## 测试 NIB 加载
 
 `PhotoCell` 设置在一个 NIB 中，我们可以写一个简单的测试来检查 outlets 设置得是否正确。我们来回顾一下 `PhotoCell` 类：
 
@@ -359,7 +358,7 @@ Partial mocks 会修改 mocking 的对象，并且在 mocks 的生存期一直�
 
 值得一提的是，当有什么发生变动时，测试和相应的类或 nib 需要同时更新。这是事实。你需要把它和 outlets 变化的可能性做权衡。如果你用了 `.xib` 文件，你可能要注意了，这是经常发生的事。
 
-### 关于 Class 和 Injection
+## 关于 Class 和 Injection
 
 我们已经从*与 Xcode 集成*得知，测试 bundle 会注入到应用程序中。省略注入的如何工作的细节（它本身是个巨大的话题），简单地说：注入是把待注入的 bundle（我们的测试 bundle）中的 Objective-C 类添加到运行的应用程序中。这很好，因为这样允许我们运行测试了。
 
@@ -373,13 +372,13 @@ STAssertTrue([cell isMemberOfClass:[PhotoCell class]], @"");
 
 再一次声明：注入很复杂。你应该避免：不要把应用程序中的 `.m` 文件添加到测试 target 中。否则你会得到预想不到的行为。
 
-### 额外的思考
+## 额外的思考
 
 如果你使用一个持续集成的解决方案，让你的测试启动和运行是一个好主意。详细的描述超过了本文的范围。这些脚本通过 `RunUnitTests` 脚本触发。还有个 `TEST_AFTER_BUILD` 环境变量。
 
 一个有趣的选择是创建单独的测试 bundle 来自动化性能测试。你可以在测试方法里做任何你想做的。定时调用一些方法并使用 `STAssert` 来检查它们是否在特定阈值里面是一种选择。
 
-### 扩展阅读
+## 扩展阅读
 
 - [Test-driven development][6]
 - [OCMock][7]

@@ -3,12 +3,12 @@ layout: post
 title: "我的 iOS 开发工具箱"
 published: true
 categories:
-- Misc
+- productivity
 ---
 
 本文记录了我在 iOS 开发中使用过的一些工具，利用这些工具，可以让开发变得更有效率。
 
-### Charles
+## Charles
 
 [Charles][1] 是一个 HTTP 监视器，它是以 HTTP 代理的方式实现的。作为客户端和服务器通讯的中间人，它可以将 HTTP 传输的数据都展示出来，这给数据调试带来了极大的便利。通常，可以用它来分析第三方库、框架以及其他互联网应用程序的行为。
 
@@ -18,13 +18,13 @@ Charles 同时支持 HTTP 和 HTTPS 两种协议。对于 HTTP 协议，无需�
 
 这也告诉我们一个事实，虽然 HTTPS 是一个很好的加密层，但关键数据不要用明文传输。
 
-### CocoaPods
+## CocoaPods
 
 [CocoaPods][6] 是 Objective-C 项目的依赖管理工具。利用它，可以轻松地将第三方库集成到现有项目中。它是建立在操作 Xcode 项目文件的基础上的，它通过一个配置文件来计算依赖，下载第三方库并修改 Xcode 项目文件，比如 .xcworkspace 和 .xcconfig 文件。
 
 CocoaPods 的出现改变了 Objective-C 社区的生态环境，就像 RubyGems 之于 Ruby 那样，开发者可以创建自己的 Pod 并把它贡献出来。你只需要在 Podfile 配置文件中指定你需要使用的 Pods，CocoaPods 会帮你处理好依赖关系并设置 Xcode 项目。你无需再像以前那样，手动下载第三方库的源码，然后设置系统 Frameworks 或者编译选项。CocoaPods 会帮你处理好这一切。
 
-### xctool
+## xctool
 
 [xctool][7] 是由 Facebook 开源的 Objective-C 命令行构建工具，用来代替 Xcode 内建的 xcodebuild。之所以出现 xctool 是因为 xcodebuild 对命令行的支持不够，因为 Xcode 没有把所有构建和测试的逻辑通过 xcodebuild 完全暴露出来，xctool 正好弥补了这些缺点。
 

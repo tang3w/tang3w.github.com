@@ -1,8 +1,0 @@
-<ul class="posts">
-{% for post in category_posts %}
-	<li>
-		<a href="{{ post.url }}">{% if post.categories contains 'translate' %}<span class="translate">译文</span>{% endif %}{{ post.title }}</a>
-		<p class="date" cate="{{ post.categories }}">{{ post.date | date:"%Y-%m-%d" }}</p>
-	</li>
-{% endfor %} 
-</ul>

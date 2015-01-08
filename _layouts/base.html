@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html>
+  {% include head.html %}
+  <body>
+    <div id="all"> {{ content }} </div>
+    {% if site.google_analytics %}
+    {% include ga.html %}
+    {% endif %}
+  </body>
+</html>

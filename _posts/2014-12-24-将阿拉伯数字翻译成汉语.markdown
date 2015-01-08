@@ -2,6 +2,8 @@
 layout: post
 title: "将阿拉伯数字翻译成汉语"
 published: true
+categories:
+- JavaScript
 ---
 
 最近遇到一个问题，需要把阿拉伯数字翻译成汉语。下面是我用 JavaScript 语言实现的方法：

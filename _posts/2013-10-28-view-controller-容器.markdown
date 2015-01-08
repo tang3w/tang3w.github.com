@@ -3,9 +3,8 @@ layout: post
 title: "View Controller 容器"
 published: true
 categories:
-- translate
+- translation
 - Objective-C
-- objc.io
 ---
 
 <p id="state">注：这篇翻译已经过 objc.io 授权，原文链接是：<a href="http://www.objc.io/issue-1/containment-view-controller.html" title="View Controller Containment">View Controller Containment</a></p>
@@ -24,7 +23,7 @@ UIWindow 作为作为一个应用程序的根视图（root view），是旋转�
 
 在 iOS 5 之前构建自定义的 view controller 容器时，要保存一个 child view controller 的引用，还要手动在 parent view controller 中转发所有 view 事件方法的调用，要做好非常困难。
 
-### 一个例子
+## 一个例子
 
 当你还是个孩子，在沙滩上玩时，你父母是否告诉过你，如果不停地用铲子挖，最后会到达中国？我父母就说过，我就做了个叫做 *Tunnel* 的 demo 程序来验证这个说法。你可以 clone 这个 [Github 代码库][2]并运行这个程序，它有助于让你更容易理解示例代码。*（剧透：从丹麦西部开始，挖穿地球，你会到达南太平洋的某个地方。）*
 
@@ -65,7 +64,7 @@ Root view controller 有两个 container views。添加它们是为了让布局�
 3. child 被通知到它现在有一个 parent view controller。
 4. 用来显示地理位置的 child view controller 被实例化了，但是还没有被插入到任何 view 或 controller 层级中。
 
-### 布局
+## 布局
 
 Root view controller 定义了两个 container views，它决定了 child view controller 的大小。Child view controllers 不知道会被添加到哪个容器中，因此必须适应大小。
 
@@ -85,7 +84,7 @@ Root view controller 定义了两个 container views，它决定了 child view c
 
 现在，它们就会用 super view 的 bounds 来进行布局。这样增加了 child view controller 的可复用性；如果我们把它 push 到 navigation controller 的栈中，它仍然会正确地布局。
 
-### 过场动画
+## 过场动画
 
 Apple 已经针对 view controller 容器做了细粒度很好的 API，我们可以构造我们能想到的任何容器场景的动画。Apple 还提供了一个基于 block 的方便的方法，来切换屏幕上的两个 controller views。方法 `transitionFromViewController:toViewController:(...)` 已经为我们考虑了很多细节。
 
@@ -121,7 +120,7 @@ Apple 已经针对 view controller 容器做了细粒度很好的 API，我们�
 
 为了能使用 `UIViewAnimationOptionTransitionFlipFromTop` 动画，我们必须把 children's view 添加到我们的 view containers 里面，而不是 root view controller 的 view。否则动画将导致整个 root view 都翻转。
 
-### 消息传递
+## 消息传递
 
 View controllers 应该是可复用的、自包含的实体。Child view controllers 也不能违背这个经验法则。为了达到目的，parent view controller 应该只关心两个任务：布局 child view controller 的 root view，以及与 child view controller 暴露出来的 API 通信。它绝不应该去直接修改 child view tree 或其他内部状态。
 
