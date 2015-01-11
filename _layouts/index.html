@@ -2,9 +2,11 @@
 layout: default
 ---
 
-<link rel="stylesheet" href="/css/jquery.mmenu.css">
-<link rel="stylesheet" href="/css/font-icon.css">
-<link rel="stylesheet" href="/css/index.css">
+{% include define.html %}
+
+<link rel="stylesheet" type="text/css" href="{{ css_link }}jquery.mmenu.css">
+<link rel="stylesheet" type="text/css" href="{{ css_link }}font-icon.css">
+<link rel="stylesheet" type="text/css" href="{{ css_link }}index.css">
 
 <a id="navicon" class="font-icon-menu needsclick" href="#slide-menu"></a>
 
@@ -13,9 +15,9 @@ layout: default
   {{ content }}
 </div>
 
-<script type="text/javascript" src="/js/jquery-1.11.2.min.js"></script>
-<script type="text/javascript" src="/js/jquery.mmenu.min.js"></script>
-<script type="text/javascript" src="/js/fastclick.min.js"></script>
+<script type="text/javascript" src="{{ js_link }}jquery-1.11.2.min.js"></script>
+<script type="text/javascript" src="{{ js_link }}jquery.mmenu.min.js"></script>
+<script type="text/javascript" src="{{ js_link }}fastclick.min.js"></script>
 
 <script type="text/javascript">
   $(function(){

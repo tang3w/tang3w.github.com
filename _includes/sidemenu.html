@@ -1,14 +1,16 @@
+{% include define.html %}
+
 <nav id="menu">
   <ul class="categories">
-    <li><a href="/">Home</a></li>
+    <li><a href="{{ home_link }}">Home</a></li>
     <li><span>Categories</span>
       <ul>
         {% for category in site.categories %}
-        <li><a href="/category.html?name={{ category[0] }}"> {{ category[0] }}</a></li>
+        <li><a href="{{ category_link }}?name={{ category[0] }}">{{ category[0] }}</a></li>
         {% endfor %}
       </ul>
     </li>
-    <li><a href="/quickviz.html">QuickViz</a></li>
-    <li><a href="/about.html">About</a></li>
+    <li><a href="{{ quickviz_link }}">QuickViz</a></li>
+    <li><a href="{{ about_link }}">About</a></li>
   </ul>
 </nav>

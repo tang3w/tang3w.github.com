@@ -4,6 +4,8 @@ title: QuickViz
 comments: true
 ---
 
+{% include define.html %}
+
 ### 简介
 
 [QuickViz][1] 是一个基于 [GraphViz][2] 的，iOS 平台上的应用程序。你可以使用它来快速实现图可视化，创建思维导图、流程图、网络结构图、社交网络图等。
@@ -16,7 +18,7 @@ comments: true
 
 ### 屏幕快照
 
-![Screenshot1][3]
+![Screenshot1]({{ img_link }}qv-screenshot1.png)
 
 ### 反馈
 
@@ -24,4 +26,3 @@ comments: true
 
 [1]: https://itunes.apple.com/us/app/quickviz/id767549398?ls=1&mt=8
 [2]: http://www.graphviz.org/
-[3]: /resource/qv-screenshot1.png

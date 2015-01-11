@@ -6,9 +6,11 @@ categories:
 - JavaScript
 ---
 
-<link rel="stylesheet" type="text/css" href="/css/qvtable.css">
-<script src="//cdn.staticfile.org/jquery/1.9.1/jquery.js"></script>
-<script src="/js/QVTable.js"></script>
+{% include define.html %}
+
+<link rel="stylesheet" type="text/css" href="{{ css_link }}qvtable.css">
+<script src="{{ js_link }}jquery-1.11.2.min.js"></script>
+<script src="{{ js_link }}qvtable.js"></script>
 
 HTML 提供了 `table` 标签来创建表格。通常使用表格来表示一些结构化的数据。简单的结构化数据，例如报表或账单等，对应的表格也比较简单。但是有些复杂的数据用表格来表示就没那么容易了，比如下面这张表格：
 
@@ -16,7 +18,7 @@ HTML 提供了 `table` 标签来创建表格。通常使用表格来表示一些
 
 要创建上面这个复杂的表格，你首先需要清楚 `table` 标签的 `rowspan` 和 `colspan` 属性是如何工作的。然后你得计算每个单元格的横向和纵向跨度，然后再用 HTML 写出来。但是，整个过程非常不直观。
 
-为了解决上述问题，我实现了 [QVTable.js][1] 库，用来创建复杂的表格。下面是个示例，你可以先选中想要操作的单元格，然后点击表格上方的按钮来测试：
+为了解决上述问题，我实现了 [QVTable.js](https://github.com/tang3w/QVTable) 库，用来创建复杂的表格。下面是个示例，你可以先选中想要操作的单元格，然后点击表格上方的按钮来测试：
 
 <div id="toolbar">
     <button id="remove">Remove</button>
@@ -35,7 +37,4 @@ QVTable 会试图以比较自然的方式来操作表格。例如，当你删除
 
 值得一提的是，当你删除或合并单元格之后，QVTable 会试图压缩整张表格。压缩的过程是逐一扫描列和行，如果某一列或行上的单元格有公共的冗余，那么冗余将被清除。具体来说，如果在上表中，将 B 和 D 合并成 B，那么 A, C 和合并之后的 B 就有一个单位的冗余，所以它们的高度都会减去 1 个单位。这种机制可以避免表格只能扩大而不能减小的问题。
 
-QVTable 只是个实验项目，还有一些值得优化和改进的地方。我计划把其中的某些特性移植到 iOS 上面，以支持 [QuickViz][2] 的表格编辑操作。该项目已放在 Github 上以 MIT 协议开源了，欢迎提出好的建议。
-
-[1]: https://github.com/tang3w/QVTable
-[2]: http://tang3w.com/quickviz.html
+QVTable 只是个实验项目，还有一些值得优化和改进的地方。我计划把其中的某些特性移植到 iOS 上面，以支持 [QuickViz]({{ quickviz_link }}) 的表格编辑操作。该项目已放在 Github 上以 MIT 协议开源了，欢迎提出好的建议。

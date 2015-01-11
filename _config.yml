@@ -2,6 +2,7 @@
 title: Tianyong Tang
 description: I blog just for fun.
 url: "http://tang3w.com"
+baseurl: "" # subpath of site, e.g. /blog
 google_analytics: UA-34425969-1
 disqus_shortname: tang3w
 
