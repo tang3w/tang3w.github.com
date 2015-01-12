@@ -181,7 +181,7 @@
   .mm-list a.mm-subclose:before {
     border-right: none;
     border-bottom: none;
-    margin-bottom: -15px;
+    margin-bottom: -14px;
     left: 22px; }
 
 .mm-menu.mm-vertical .mm-list .mm-panel {
