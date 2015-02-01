@@ -1,0 +1,25 @@
+---
+layout: post
+title: "使用 Lemon 实现 CSS 语法分析器"
+published: true
+---
+
+用 [Lemon](http://www.hwaci.com/sw/lemon/) 实现 CSS 语法分析器的想法，缘于 [CocoaSugar](https://github.com/tang3w/CocoaSugar) 项目需要解析 CSS 文件。CSS 的语法分析器有很多开源实现，不选择它们的原因有：
+
+1. 项目太大，CocoaSugar 只支持 CSS 语法规范的一个子集，而不是全部；
+2. 难以集成，有些逻辑需要在语法分析阶段完成，使用其他实现不太灵活；
+3. 命名空间，为避免命名冲突，需要修改开源实现，比较麻烦。
+
+因此，只能自己实现一个 CSS 语法分析器。恰好前不久刚使用 [Flex](http://flex.sourceforge.net/) 和 [Bison](http://www.gnu.org/software/bison/) 实现过 [SLL](https://github.com/tang3w/CocoaSugar#constraint-value-expression)，自然而然地想到用同样的技术来实现 CSS 语法分析器。但是，在好奇心的驱使下，想看看有没有比 Flex 和 Bison 更好的替代品，于是搜索了一下，没想到还挺多。经过一番对比之后，最终，我决定用 Lemon 代替 Bison 来完成我的工作。
+
+选择 Lemon 是因为它相对于 Bison 有一些优点：
+
+1. Lemon 的语法更加直观，动作中引用的符号需要显式地命名，例如：<br/>
+    `expr(A) ::= expr(B) ADD item(C) . { A = B + C; }`。而 Bison 只能通过 `$1`，`$2` 这样的名称和符号关联，容易出错；
+2. Lemon 生成的分析器是可重入，线程安全的。Bison 生成的分析器默认是不可重入的，需要通过 `api.pure` 选项来开启。
+
+词法分析器我仍然使用 Flex 来生成，因为它已经非常成熟。据说 [re2c](http://re2c.org/) 更灵活，并且它生成的分析器比基于 Flex 的分析器更快，连 PHP 也把原来的 Flex 换成了 re2c 来生成词法分析器。希望在下一个项目中可以尝试一下。
+
+工具确定好了，剩下的就是具体实现了。W3C 给出了 CSS 的[词法和语法](http://www.w3.org/TR/CSS21/grammar.html)，实现起来就非常轻松了。稍微有点工作量的是抽象语法树的实现。
+
+CSS 语法分析器的所有代码都可以从 Github [获取](https://github.com/tang3w/COSStyleParser)。
