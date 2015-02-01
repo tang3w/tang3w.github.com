@@ -1,0 +1,131 @@
+---
+layout: post
+title: "抽象语法树的可视化"
+published: true
+---
+
+抽象语法树([AST](http://en.wikipedia.org/wiki/Abstract_syntax_tree))在计算机科学领域有广泛的应用。但这棵树一般都在内存中，无法通过肉眼去识别，只能在脑袋中想象这棵树长什么样子。如果能以可视化的方式展现出来就好了，这样不仅便于分析和调试，也能让你对程序更有信心。
+
+上周，我就遇到了这个问题：我的程序构建了一颗抽象语法树，我想看看它到底长什么样子。我知道我能轻松地遍历整棵树并打印出每个节点的信息，但要打印出树形结构就比较困难了。这时，我想到了熟悉的数据可视化工具：[GraphViz](http://www.graphviz.org/)。GraphViz 是贝尔实验室开发的程序，用来解决这个问题再合适不过了。
+
+GraphViz 接受 [DOT](http://www.graphviz.org/content/dot-language) 格式的输入，然后渲染成其他格式的图像。因此，首先得打印出抽象语法树的 DOT 表示。好在 DOT 语言真是非常的友好，遍历一次就能打印出抽象语法树的 DOT 表示。以下是 [COSStyleParser](https://github.com/tang3w/COSStyleParser) 项目中实际的例子：
+
+假设 COSStyleParser 解析的目标是以下 CSS 文件：
+
+```CSS
+.foo.bar, .baz {
+    left: 10;
+    width: 100% - 20;
+    background-color: red;
+}
+```
+
+下面的几个函数将 CSS 的抽象语法树转换成 DOT 格式：
+
+```C
+char *COSStyleNodeTypeToStr(COSStyleNodeType nodeType) {
+    switch (nodeType) {
+    case COSStyleNodeTypeVal      : return "val";
+    case COSStyleNodeTypeProp     : return "prop";
+    case COSStyleNodeTypeDecl     : return "decl";
+    case COSStyleNodeTypeDeclList : return "decllist";
+    case COSStyleNodeTypeCls      : return "cls";
+    case COSStyleNodeTypeClsList  : return "clslist";
+    case COSStyleNodeTypeSel      : return "sel";
+    case COSStyleNodeTypeSelList  : return "sellist";
+    case COSStyleNodeTypeRule     : return "rule";
+    case COSStyleNodeTypeRuleList : return "rulelist";
+    case COSStyleNodeTypeSheet    : return "sheet";
+    default: break;
+    }
+
+    return "undefined";
+}
+
+void COSStylePrintAstNodes(COSStyleAST *astp) {
+    if (astp == NULL) return;
+
+    printf("_%p[label=%s]\n", astp, COSStyleNodeTypeToStr(astp->nodeType));
+
+    COSStyleAST *l = astp->l;
+    COSStyleAST *r = astp->r;
+
+    if (l != NULL) printf("_%p -> _%p\n", astp, l);
+    if (r != NULL) printf("_%p -> _%p\n", astp, r);
+
+    COSStylePrintAstNodes(l);
+    COSStylePrintAstNodes(r);
+}
+
+void COSStylePrintAstAsDot(COSStyleAST *astp) {
+    printf("digraph G {\n");
+    printf("node[shape=rect]\n");
+
+    COSStylePrintAstNodes(astp);
+
+    printf("}");
+}
+```
+
+`COSStylePrintAstAsDot` 函数的输出结果如下：
+
+```
+digraph G {
+node[shape=rect]
+_0x7fb18277a050[label=sheet]
+_0x7fb18277a050 -> _0x7fb18277a020
+_0x7fb18277a020[label=rulelist]
+_0x7fb18277a020 -> _0x7fb182779ff0
+_0x7fb182779ff0[label=rule]
+_0x7fb182779ff0 -> _0x7fb182779d30
+_0x7fb182779ff0 -> _0x7fb182779fc0
+_0x7fb182779d30[label=sellist]
+_0x7fb182779d30 -> _0x7fb182779c70
+_0x7fb182779d30 -> _0x7fb182779d00
+_0x7fb182779c70[label=sellist]
+_0x7fb182779c70 -> _0x7fb182779c40
+_0x7fb182779c40[label=sel]
+_0x7fb182779c40 -> _0x7fb182779c10
+_0x7fb182779c10[label=clslist]
+_0x7fb182779c10 -> _0x7fb182779bb0
+_0x7fb182779c10 -> _0x7fb182779be0
+_0x7fb182779bb0[label=clslist]
+_0x7fb182779bb0 -> _0x7fb182779b80
+_0x7fb182779b80[label=cls]
+_0x7fb182779be0[label=cls]
+_0x7fb182779d00[label=sel]
+_0x7fb182779d00 -> _0x7fb182779cd0
+_0x7fb182779cd0[label=clslist]
+_0x7fb182779cd0 -> _0x7fb182779ca0
+_0x7fb182779ca0[label=cls]
+_0x7fb182779fc0[label=decllist]
+_0x7fb182779fc0 -> _0x7fb182779f00
+_0x7fb182779fc0 -> _0x7fb182779f90
+_0x7fb182779f00[label=decllist]
+_0x7fb182779f00 -> _0x7fb182779df0
+_0x7fb182779f00 -> _0x7fb182779e90
+_0x7fb182779df0[label=decllist]
+_0x7fb182779df0 -> _0x7fb182779d90
+_0x7fb182779d90[label=decl]
+_0x7fb182779d90 -> _0x7fb182779d60
+_0x7fb182779d90 -> _0x7fb182779dc0
+_0x7fb182779d60[label=prop]
+_0x7fb182779dc0[label=val]
+_0x7fb182779e90[label=decl]
+_0x7fb182779e90 -> _0x7fb182779e20
+_0x7fb182779e90 -> _0x7fb182779ed0
+_0x7fb182779e20[label=prop]
+_0x7fb182779ed0[label=val]
+_0x7fb182779f90[label=decl]
+_0x7fb182779f90 -> _0x7fb182779f30
+_0x7fb182779f90 -> _0x7fb182779f60
+_0x7fb182779f30[label=prop]
+_0x7fb182779f60[label=val]
+}
+```
+
+最后，用 GraphViz 渲染以上 DOT 输出，即可得到下面这幅图：
+
+![CSS-AST-GV](/img/CSS-AST-GV.png)
+
+GraphViz 是将数据可视化的有力工具。借助它，我们可以将许多数据结构以图形的方式展现出来。
